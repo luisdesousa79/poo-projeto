@@ -11,15 +11,15 @@ import objects.Bomb;
 import objects.Cup;
 import objects.GameCharacter;
 import objects.GameObject;
-import objects.Trunk;
-import objects.Stone;
+import objects.HoledWall;
+import objects.MovableObject;
 import objects.SmallFish;
 import objects.SteelHorizontal;
 import objects.SteelVertical;
+import objects.Stone;
 import objects.Trap;
+import objects.Trunk;
 import objects.Wall;
-import objects.HoledWall;
-import objects.MovableObject;
 import objects.Water;
 import pt.iscte.poo.utils.Direction;
 import pt.iscte.poo.utils.Point2D;
@@ -267,10 +267,4 @@ public class Room {
 	    }
 	}
 	
-	public boolean canMoveTo(Point2D p) {
-		return true;
-	}
-	
-	
-
 }
