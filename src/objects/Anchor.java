@@ -2,7 +2,7 @@ package objects;
 
 import pt.iscte.poo.game.Room;
 
-public class Anchor extends MovableObject {
+public class Anchor extends HeavyObject {
 	
 	public Anchor(Room room) {
 		super(room);

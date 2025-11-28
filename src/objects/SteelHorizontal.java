@@ -2,7 +2,7 @@ package objects;
 
 import pt.iscte.poo.game.Room;
 
-public class SteelHorizontal extends GameObject {
+public class SteelHorizontal extends ImmovableObject {
 
 	public SteelHorizontal(Room room) {
 		super(room);

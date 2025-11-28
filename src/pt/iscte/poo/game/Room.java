@@ -12,6 +12,7 @@ import objects.Cup;
 import objects.GameCharacter;
 import objects.GameObject;
 import objects.HoledWall;
+import objects.ImmovableObject;
 import objects.MovableObject;
 import objects.SmallFish;
 import objects.SteelHorizontal;
@@ -91,22 +92,22 @@ public class Room {
 			int y = 0;
 
 			while (sc.hasNextLine()) {
-				
-				//vai processar linha a linha enquanto houver linhas para ler
+
+				// vai processar linha a linha enquanto houver linhas para ler
 
 				String line = sc.nextLine();
-				
-				//dentro de cada linha processa caracter a caracter
+
+				// dentro de cada linha processa caracter a caracter
 				for (int x = 0; x < line.length(); x++) {
 					char c = line.charAt(x);
 					Point2D pos = new Point2D(x, y);
-					
-					//põe água em todas as posições da grelha
-				    GameObject water = new Water(r);
-	                water.setPosition(pos);
-	                r.addObject(water);
-					
-					//preenche ainda a grelha em conformidade com o caracter presente no ficheiro
+
+					// põe água em todas as posições da grelha
+					GameObject water = new Water(r);
+					water.setPosition(pos);
+					r.addObject(water);
+
+					// preenche ainda a grelha em conformidade com o caracter presente no ficheiro
 					switch (c) {
 
 					case 'B': // Big fish
@@ -176,7 +177,7 @@ public class Room {
 						trunk.setPosition(pos);
 						r.addObject(trunk);
 						break;
-						
+
 					case 'X':
 						GameObject wh = new HoledWall(r);
 						wh.setPosition(pos);
@@ -232,39 +233,97 @@ public class Room {
 		// if (canMoveTo(newPos)) {
 		// setPosition(newPos)
 	}
-	
-	public GameObject getElementAt(Point2D position) {
-        for (GameObject obj : objects) {
-            if (obj.getPosition().equals(position)) {
-                // ignora a agua
-                if (obj instanceof Water) continue;
-                
-                return obj;
-            }
-        }
-        return null; // da null se a posicao é agua
-    }
 
+	// este método permite listar os objectos que se encontram em determinada
+	// posição
+	public List<GameObject> getObjectsAt(Point2D position) {
+		List<GameObject> objectsList = new ArrayList<>();
+		for (GameObject gameObject : objects) {
+			if (gameObject.getPosition().equals(position)) {
+				objectsList.add(gameObject);
+			}
+		}
+
+		return objectsList;
+
+	}
+
+	// função para verificar se uma determinada posição é ocupada apenas por água
+	public boolean isOnlyWaterAt(Point2D p) {
+		List<GameObject> objs = getObjectsAt(p);
+
+		for (GameObject o : objs) {
+			if (!(o instanceof Water)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	// este método diz que objectos estãon numa determinada posição, ignorando a
+	// água
+	public GameObject getElementAt(Point2D position) {
+		for (GameObject obj : objects) {
+			if (obj.getPosition().equals(position)) {
+				// ignora a agua
+				if (obj instanceof Water)
+					continue;
+
+				return obj;
+			}
+		}
+		return null; // da null se a posicao é agua
+	}
+
+	// função para verificar se um dado ponto contém um objeto imóvel
+	public boolean hasImmovableAt(Point2D p) {
+		List<GameObject> objs = getObjectsAt(p);
+
+		for (GameObject o : objs) {
+			if (o instanceof ImmovableObject) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// função para verificar se um dado ponto contém um objeto móvel
+	public boolean hasMovableAt(Point2D p) {
+		List<GameObject> objs = getObjectsAt(p);
+
+		for (GameObject o : objs) {
+			if (o instanceof MovableObject) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// este método aplica a gravidade (movimento para baixo de uma unidade) aos
+	// objetos do Room
 	public void applyGravity() {
-	    // percore a room de cima para baixo
-	    for (int y = 9; y >= 0; y--) { 
-	        for (int x = 0; x < 10; x++) {
-	            
-	            Point2D position = new Point2D(x, y);
-	            GameObject obj = getElementAt(position);
-	            
-	            
-	            if (obj instanceof MovableObject) { 
-	                
-	                Point2D positionBelow = new Point2D(x, y + 1);
-	                
-	                // ver se ta dentro do mapa e o de baixo é agua
-	                if (positionBelow.getY() < 10 && getElementAt(positionBelow) == null) {
-	                    obj.setPosition(positionBelow); 
-	                }
-	            }
-	        }
-	    }
+		
+		//cria uma cópia da lista de objectos do jogo
+		List<GameObject> orderedObjects = new ArrayList<>(objects);
+		
+		//ordena a lista de objetos do jogo de tal forma que venham primeiro os que estão em baixo
+		orderedObjects.sort((a,b) -> (Integer.compare(b.getPosition().getY(), a.getPosition().getY()))) ;
+
+		// percorre a lista ordenada de objectos da Room
+		for (GameObject object : orderedObjects) {
+
+			// se o objecto for móvel, vai guardar a posição imediatamente abaixo
+			if (object instanceof MovableObject) {
+				Point2D destination = object.getPosition().plus(Direction.DOWN.asVector());
+
+				// se objecto no Tile imediatamente abaixo for apenas a água, o objeto move-se
+				// para baixo
+				if (isOnlyWaterAt(destination))
+					object.setPosition(destination);
+			}
+		}
 	}
 	
+	
+
 }
