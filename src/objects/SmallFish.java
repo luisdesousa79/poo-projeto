@@ -26,33 +26,32 @@ public class SmallFish extends GameCharacter {
 		return 1;
 	}
 	
+	// função que diz se o peixe consegue ou não empurrar o objeto
 	@Override
-	public void move(Vector2D dir) {
-		//chama a função move da classe GameCharacter
-		super.move(dir);
+	public boolean canPush(Pushable obj, Vector2D dir) {
 		
-		Point2D destination = getPosition().plus(dir);
-		
-		
-		
-		// se o destino for a parede com buracos, move-se para lá
-		if (obj instanceof HoledWall) {
-			setPosition(destination);
-		}
-		
-		// se no destino estiver um objeto pesado, não faz nada
-		if (obj instanceof HeavyObject) 
-			return;
-		
-		else if (obj instanceof Interactable) {
-            // trata o obj como interctable
-            Interactable interactableObj = (Interactable) obj;
-            
-            // se interagiu, move-se para o destino
-            if (interactableObj.interact(this, dir)) {
-                setPosition(destination);
-            }
-        }
+		// no caso de um empurrão na vertical, devolve falso
+		if (dir.getY() != 0) {
+	        return false;
+	    }
+
+	    // se não for um objeto leve, retorna falso
+	    if (!(obj instanceof LightObject)) {
+	        return false;
+	    }
+	    
+	    // se não houver apenas água na direção do empurrão, o peixe pequeno não consegue empurrar
+	    
+	    Point2D objectPosition = ((GameObject) obj).getPosition();
+	    Point2D nextToObject = objectPosition.plus(dir);
+	    		
+	    if(!getRoom().isOnlyWaterAt(nextToObject)) {
+	    	return false;
+	    }
+	    
+	
+	    // em qualquer outro caso, retorna verdadeiro
+	    return true;
 	}
 
 }

@@ -24,11 +24,13 @@ public class GameEngine implements Observer {
 	public GameEngine() {
 		rooms = new HashMap<String, Room>();
 		loadGame();
-		currentRoom = rooms.get("room0.txt");
+		currentRoom = rooms.get("room1.txt");
 		updateGUI();
 		SmallFish.getInstance().setRoom(currentRoom);
 		BigFish.getInstance().setRoom(currentRoom);
 	}
+	
+	
 
 	private void loadGame() {
 		File[] files = new File("./rooms").listFiles();
@@ -93,7 +95,7 @@ public class GameEngine implements Observer {
 		}
 	}
 
-	// incrementa o contador de ticks e aplica a gravidadeaos objetos móveis
+	// incrementa o contador de ticks e aplica a gravidade aos objetos móveis
 	private void processTick() {
 		lastTickProcessed++;
 
@@ -102,6 +104,7 @@ public class GameEngine implements Observer {
 		currentRoom.applyGravity();
 	}
 
+	// reinicializa os objectos da interface gráfica
 	public void updateGUI() {
 		if (currentRoom != null) {
 			ImageGUI.getInstance().clearImages();

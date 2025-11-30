@@ -18,4 +18,6 @@ public class Trunk extends ImmovableObject {
 		return 1; // verificar se está correcto
 	}
 	
+	
+	
 }

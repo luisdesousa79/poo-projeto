@@ -46,32 +46,33 @@ public class BigFish extends GameCharacter implements Supporter {
 		}
 		return false;
 	}
-	
+
 	@Override
-	public void move(Vector2D dir) {
-		// chama a função move(Vector2D dir) de GameCharacter
-		super.move(dir);
-		
-		Point2D destination = getPosition().plus(dir);
+	public boolean canPush(Pushable object, Vector2D dir) {
+		Point2D objectPosition = ((GameObject) object).getPosition();
 
-		GameObject obj = getRoom().getElementAt(destination);
-		
-		if(getElementAt(destination).equals("trap")) {
-			 dies();
-		 }
-		
-		GameObject obj = getRoom().getElementAt(destination);
-		
-		else if (obj instanceof Interactable) {
-	           // trata o obj como interctable
-	           Interactable interactableObj = (Interactable) obj;
-	            
-	           // se interagiu, move-se para o destino
-	           if (interactableObj.interact(this, dir)) {
-	               setPosition(destination);
-	            }
-	        }
+		// se o empurrão for na vertical, o peixe grande só consegue empurrar um objecto
+		// leve ou pesado
+		if (dir.getY() != 0) {
+			// se houver dois objetos seguidos na vertical, o peixe grande não consegue
+			// empurrar
 
+			Point2D nextToObject = objectPosition.plus(dir);
+
+			if (getRoom().isOnlyWaterAt(nextToObject)) {
+				return true;
+			}
+
+			return false;
+		}
+
+		// se o empurrão for na horizontal, o peixe grande consegue empurrar vários
+		// objetos leves ou pesados
+			
+	       if (dir.getX() != 0)
+	           return true;
+		
+		return false;
 	}
 
 }

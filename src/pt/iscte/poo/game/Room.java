@@ -11,6 +11,7 @@ import objects.Bomb;
 import objects.Cup;
 import objects.GameCharacter;
 import objects.GameObject;
+import objects.HeavyObject;
 import objects.HoledWall;
 import objects.ImmovableObject;
 import objects.MovableObject;
@@ -260,12 +261,12 @@ public class Room {
 		return true;
 	}
 
-	// este método diz que objectos estãon numa determinada posição, ignorando a
+	// este método diz que objetos estão numa determinada posição, ignorando a
 	// água
 	public GameObject getElementAt(Point2D position) {
 		for (GameObject obj : objects) {
 			if (obj.getPosition().equals(position)) {
-				// ignora a agua
+				// ignora a água
 				if (obj instanceof Water)
 					continue;
 
@@ -299,15 +300,25 @@ public class Room {
 		return false;
 	}
 
+	// verifica se uma determinada posição contém um muro perfurado
+	public boolean hasHoledWallAt(Point2D pos) {
+		for (GameObject o : getObjectsAt(pos)) {
+			if (o instanceof HoledWall)
+				return true;
+		}
+		return false;
+	}
+
 	// este método aplica a gravidade (movimento para baixo de uma unidade) aos
 	// objetos do Room
 	public void applyGravity() {
-		
-		//cria uma cópia da lista de objectos do jogo
+
+		// cria uma cópia da lista de objectos do jogo
 		List<GameObject> orderedObjects = new ArrayList<>(objects);
-		
-		//ordena a lista de objetos do jogo de tal forma que venham primeiro os que estão em baixo
-		orderedObjects.sort((a,b) -> (Integer.compare(b.getPosition().getY(), a.getPosition().getY()))) ;
+
+		// ordena a lista de objetos do jogo de tal forma que venham primeiro os que
+		// estão em baixo
+		orderedObjects.sort((a, b) -> (Integer.compare(b.getPosition().getY(), a.getPosition().getY())));
 
 		// percorre a lista ordenada de objectos da Room
 		for (GameObject object : orderedObjects) {
@@ -316,14 +327,70 @@ public class Room {
 			if (object instanceof MovableObject) {
 				Point2D destination = object.getPosition().plus(Direction.DOWN.asVector());
 
-				// se objecto no Tile imediatamente abaixo for apenas a água, o objeto move-se
-				// para baixo
-				if (isOnlyWaterAt(destination))
+				// se o objeto no Tile imediatamente abaixo for apenas a água, o objeto move-se
+				// para baixo (cai uma posição)
+				if (isOnlyWaterAt(destination)) {
 					object.setPosition(destination);
+
+					// se for a bomba a cair, o estado dela muda para falling
+					if (object instanceof Bomb) {
+						((Bomb) object).setFalling(true);
+					}
+
+					continue;
+
+				}
+
+				// caso em que a bomba está a cair e encontra algo
+
+				if (object instanceof Bomb) {
+					Bomb b = (Bomb) object;
+
+					if (b.isFalling()) {
+						// salva o que está em baixo
+						GameObject objetoAtingido = getElementAt(destination);
+
+						// se a bomba colide com um peixe, o peixe suporta a bomba
+						if (objetoAtingido instanceof GameCharacter) {
+							// agora peixe esta suportando a bomba
+							b.setFalling(false);
+							continue;
+						}
+
+						// caso contrário, explode
+						b.falls();
+						continue;
+					}
+				}
+
+				// vamos verificar se, na queda, há um objecto pesado cai em cima do tronco
+				if (object instanceof HeavyObject) {
+
+					Point2D below = destination.plus(Direction.DOWN.asVector());
+
+					List<GameObject> objsBelow = getObjectsAt(below);
+
+					for (GameObject o : objsBelow) {
+						// se por baixo houver um tronco, remove-o
+						if (o instanceof Trunk) {
+							removeObject(o);
+							break;
+						}
+
+					}
+				}
+				
+				// se os objetos cairem em cima de peixes
+				
+				// se forem vários objetos leves, o peixe pequeno morre
+				
+				// se for um objeto pesado, o peixe pequeno morre
+				
+				// se forem vários objetos pesados, o peixe grande morre
+
+				
 			}
+
 		}
 	}
-	
-	
-
 }
