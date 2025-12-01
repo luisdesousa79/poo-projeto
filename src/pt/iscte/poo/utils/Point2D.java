@@ -76,7 +76,8 @@ public class Point2D implements Serializable { // Added 23-Apr-2018
 	public Point2D plus(Vector2D v) {
 		return new Point2D(x + v.getX(), y + v.getY());
 	}
-
+	
+	// devolve a lista de pontos adjacentes
 	public List<Point2D> getNeighbourhoodPoints() {
 		
 		List<Point2D> neighbours = new ArrayList<>();
