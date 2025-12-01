@@ -5,9 +5,9 @@ import pt.iscte.poo.utils.Point2D;
 import pt.iscte.poo.utils.Vector2D;
 
 public class Anchor extends HeavyObject {
-	
+
 	private boolean alreadyPushed = false;
-	
+
 	public Anchor(Room room) {
 		super(room);
 	}
@@ -19,13 +19,9 @@ public class Anchor extends HeavyObject {
 
 	@Override
 	public int getLayer() {
-		return 1; //verificar se está correcto
+		return 1; // verificar se está correcto
 	}
-	
-	public boolean setPushed() {
-		alreadyPushed = true;
-	}
-	
+
 	@Override
 	public boolean push(Vector2D dir) {
 
@@ -45,6 +41,7 @@ public class Anchor extends HeavyObject {
 			// se houver apenas água no destino, move-se para essa posição
 			if (getRoom().isOnlyWaterAt(newPos)) {
 				setPosition(newPos);
+				alreadyPushed = true;
 				// devolve verdadeiro caso seja empurrado
 				return true;
 			}
@@ -63,17 +60,15 @@ public class Anchor extends HeavyObject {
 
 				if (pushed) {
 					setPosition(newPos);
-					setPushed();
+					alreadyPushed = true;
 					return true;
 				}
 				return false;
 			}
-
-	    
 		
-	    
+	    }
 
-	    else return;
+	    return false;
 	    
 
 	}

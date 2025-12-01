@@ -34,6 +34,8 @@ public class Room {
 	private Point2D smallFishStartingPosition;
 	private Point2D bigFishStartingPosition;
 	private int activeFishIndex;
+	
+	private int levelNumber; 
 
 	public Room() {
 		objects = new ArrayList<GameObject>();
@@ -231,8 +233,6 @@ public class Room {
 	public void moveActiveFish(Direction d) {
 		GameCharacter fish = getActiveFish();
 		fish.move(d.asVector());
-		// if (canMoveTo(newPos)) {
-		// setPosition(newPos)
 	}
 
 	// este método permite listar os objectos que se encontram em determinada
@@ -337,8 +337,6 @@ public class Room {
 						((Bomb) object).setFalling(true);
 					}
 
-					continue;
-
 				}
 
 				// caso em que a bomba está a cair e encontra algo
@@ -354,12 +352,11 @@ public class Room {
 						if (objetoAtingido instanceof GameCharacter) {
 							// agora peixe esta suportando a bomba
 							b.setFalling(false);
-							continue;
+		
 						}
 
 						// caso contrário, explode
 						b.falls();
-						continue;
 					}
 				}
 
@@ -379,18 +376,26 @@ public class Room {
 
 					}
 				}
-				
-				// se os objetos cairem em cima de peixes
-				
-				// se forem vários objetos leves, o peixe pequeno morre
-				
-				// se for um objeto pesado, o peixe pequeno morre
-				
-				// se forem vários objetos pesados, o peixe grande morre
 
-				
 			}
 
 		}
+	}
+	
+	public List<MovableObject> getMovableObjectsAbove(Point2D pos) {
+	    
+		List<MovableObject> stack = new ArrayList<>();
+		Point2D above = pos.plus(Direction.UP.asVector());
+		
+		while(getElementAt(above) instanceof MovableObject) {
+			stack.add((MovableObject) getElementAt(above));
+		    above = above.plus(Direction.UP.asVector());
+		}
+	    
+	    return stack;
+	}
+	
+	public int getLevelNumber() {
+		return levelNumber;
 	}
 }

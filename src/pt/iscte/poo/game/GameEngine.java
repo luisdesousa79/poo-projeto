@@ -24,7 +24,7 @@ public class GameEngine implements Observer {
 	public GameEngine() {
 		rooms = new HashMap<String, Room>();
 		loadGame();
-		currentRoom = rooms.get("room1.txt");
+		currentRoom = rooms.get("room0.txt");
 		updateGUI();
 		SmallFish.getInstance().setRoom(currentRoom);
 		BigFish.getInstance().setRoom(currentRoom);
@@ -79,12 +79,14 @@ public class GameEngine implements Observer {
 			if (Direction.isDirection(k)) {
 				GameCharacter fish = currentRoom.getActiveFish();
 				fish.move(Direction.directionFor(k).asVector());
+				if (!fish.canSupport())
+			        fish.dies();
 			}
 
-			// salva quantos tiques ja teve
+			// salva quantos tiques já passaram até agora
 			int t = ImageGUI.getInstance().getTicks();
 
-			// processa tick ate o tick atual, t
+			// processa os ticks passados desde o último até ao t
 			while (lastTickProcessed < t) {
 				processTick();
 
@@ -100,8 +102,15 @@ public class GameEngine implements Observer {
 		lastTickProcessed++;
 
 		// implementa a gravidade nos objectos da Room
-
 		currentRoom.applyGravity();
+		
+		// verifica se o peixe pequeno pode suportar os objetos móveis acima dele
+		if (!SmallFish.getInstance().canSupport())
+			SmallFish.getInstance().dies();
+		
+		// verifica se o peixe grande pode suportar os objetos móveis acima dele
+		if (!BigFish.getInstance().canSupport())
+			BigFish.getInstance().dies();
 	}
 
 	// reinicializa os objectos da interface gráfica

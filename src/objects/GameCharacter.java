@@ -8,6 +8,8 @@ import pt.iscte.poo.utils.Vector2D;
 
 public abstract class GameCharacter extends GameObject {
 
+	private boolean isDead;
+
 	public GameCharacter(Room room) {
 		super(room);
 	}
@@ -57,7 +59,7 @@ public abstract class GameCharacter extends GameObject {
 
 			// obtém a lista de objetos na posição de destino
 			List<GameObject> objectsAtDestination = getRoom().getObjectsAt(destination);
-			
+
 			// percorre os objetos no destino
 			for (GameObject object : objectsAtDestination) {
 
@@ -72,7 +74,7 @@ public abstract class GameCharacter extends GameObject {
 
 					// peixe grande morre ao colidir
 					if (this instanceof BigFish) {
-						this.dies();
+						dies();
 						return;
 					}
 
@@ -84,7 +86,8 @@ public abstract class GameCharacter extends GameObject {
 
 			// percorre a lista de objetos na posção de destino
 			for (GameObject object : objectsAtDestination) {
-				// se encontrar um objeto que possa ser empurrado (Pushable), guarda-o numa variável
+				// se encontrar um objeto que possa ser empurrado (Pushable), guarda-o numa
+				// variável
 				if (object instanceof Pushable) {
 					pushableObject = (Pushable) object;
 					break;
@@ -116,7 +119,56 @@ public abstract class GameCharacter extends GameObject {
 	// função que implementa a morte dos peixes
 	public void dies() {
 		getRoom().removeObject(this);
+		this.isDead = true;
+		
 		// volta ao início do nível
+	}
+
+	// retorna verdadeiro se o peixe em causa morreu
+	public boolean isDead() {
+		return this.isDead;
+	}
+
+	public boolean canSupport() {
+		List<MovableObject> supportedObjects = getRoom().getMovableObjectsAbove(this.getPosition());
+
+		int numberHeavyObjects = 0;
+
+		// percorremos a lista de objetos que o peixe está a suportar
+		for (MovableObject m : supportedObjects) {
+
+			// contamos quantos são pesados
+			if (m instanceof HeavyObject)
+				numberHeavyObjects++;
+		}
+
+		if (this instanceof SmallFish) {
+
+			// peixe pequeno só pode suportar um objecto leve
+			if (supportedObjects.size() > 1) {
+				return false;
+			}
+
+			// não consegue suportar nenhum pesado
+			if (numberHeavyObjects > 0) {
+				return false;
+			}
+		}
+
+		// se for o peixe grande
+
+		if (this instanceof BigFish) {
+
+			// só pode 1 objeto pesado
+			if (numberHeavyObjects > 1) {
+				return false;
+			}
+
+			// objetos leves podem ser muitos → permitido
+			return true;
+		}
+		
+		return true;
 	}
 
 }
