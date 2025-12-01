@@ -23,6 +23,7 @@ import objects.Trap;
 import objects.Trunk;
 import objects.Wall;
 import objects.Water;
+import objects.Door;
 import pt.iscte.poo.utils.Direction;
 import pt.iscte.poo.utils.Point2D;
 
@@ -118,6 +119,7 @@ public class Room {
 						bf.setPosition(pos);
 						bf.setRoom(r);
 						r.addObject(bf);
+						r.setBigFishStartingPosition(pos);
 						break;
 
 					case 'S': // Small fish
@@ -125,6 +127,7 @@ public class Room {
 						sf.setPosition(pos);
 						sf.setRoom(r);
 						r.addObject(sf);
+						r.setSmallFishStartingPosition(pos);
 						break;
 
 					case 'W': // Wall
@@ -186,6 +189,12 @@ public class Room {
 						wh.setPosition(pos);
 						r.addObject(wh);
 						break;
+						
+					case 'E': 
+					    GameObject door = new objects.Door(r);
+					    door.setPosition(pos);
+					    r.addObject(door);
+					    break;
 
 					case ' ':
 
@@ -254,7 +263,7 @@ public class Room {
 		List<GameObject> objs = getObjectsAt(p);
 
 		for (GameObject o : objs) {
-			if (!(o instanceof Water)) {
+			if (!(o instanceof Water) && !(o instanceof Door)) {
 				return false;
 			}
 		}

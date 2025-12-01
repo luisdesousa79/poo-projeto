@@ -7,10 +7,13 @@ import java.util.Map;
 import objects.BigFish;
 import objects.GameCharacter;
 import objects.SmallFish;
+import objects.GameObject;
+import objects.Door;
 import pt.iscte.poo.gui.ImageGUI;
 import pt.iscte.poo.observer.Observed;
 import pt.iscte.poo.observer.Observer;
 import pt.iscte.poo.utils.Direction;
+
 
 public class GameEngine implements Observer {
 
@@ -41,25 +44,46 @@ public class GameEngine implements Observer {
 
 	// carrega o nível seguinte
 	private void loadNextLevel() {
-		/*
-		 * limpar todos os tiles (clearImages)
-		 * 
-		 * limpar listas internas (objectList.clear())
-		 * 
-		 * ler room(N+1).txt
-		 * 
-		 * int level;
-		 * 
-		 * currentRoom = rooms.get("room" + level + ".txt");
-		 * 
-		 * repor contadores de movimentos
-		 * 
-		 * reposicionar gui
-		 * updateGUI();
-		 * 
-		 * atualizar nível no status message
-		 * 
-		 */
+		
+		// pega a room atual
+		String roomAtual = currentRoom.getName();
+			
+		// corta os 4 caracteres de cada ponta deixando so o numero da room atual
+		String numRoomAtualStr = roomAtual.substring(4, roomAtual.length() - 4);
+				
+		// converte para int
+		int numRoomAtual = Integer.parseInt(numRoomAtualStr);
+				
+		// define a proxima room
+		int numRoomSeguinte = numRoomAtual + 1;
+		String roomSeguinte = "room" + numRoomSeguinte + ".txt";
+
+		// ve se tem a prox room
+		if (rooms.containsKey(roomSeguinte)) {
+					
+			// limpa a tela
+			ImageGUI.getInstance().clearImages();
+					
+			// passa de room
+			currentRoom = rooms.get(roomSeguinte);
+					
+			// poe denovo os peixes na room
+			SmallFish.getInstance().setRoom(currentRoom);
+			BigFish.getInstance().setRoom(currentRoom);
+			
+			// redireciona eles para o posicao de start daquela room
+			SmallFish.getInstance().setPosition(currentRoom.getSmallFishStartingPosition());
+			BigFish.getInstance().setPosition(currentRoom.getBigFishStartingPosition());
+					
+			updateGUI();
+					
+			ImageGUI.getInstance().setStatusMessage("Room " + numRoomSeguinte);
+					
+		} else {
+			// se n tiver mais rooms, venceu tudo
+			ImageGUI.getInstance().setStatusMessage("Acabaram todas as rooms. Parabens voce venceu!!!! :)");
+		}
+		
 	}
 
 	// este é o método que trata das teclas e dos ticks
@@ -78,9 +102,20 @@ public class GameEngine implements Observer {
 			// se se carregar numa tecla de direcção, movimenta-se o peixe actual
 			if (Direction.isDirection(k)) {
 				GameCharacter fish = currentRoom.getActiveFish();
-				fish.move(Direction.directionFor(k).asVector());
-				if (!fish.canSupport())
-			        fish.dies();
+				
+				boolean fishSaiu = false;
+				// ve se o peixe saiu ou nao
+				if ((fish instanceof SmallFish && smallFishExited) || (fish instanceof BigFish && bigFishExited)) {
+					fishSaiu = true;
+				}
+					
+				// mexe o peixe se ele nao saiu
+				if (!fishSaiu) {
+					fish.move(Direction.directionFor(k).asVector());
+					if (!fish.canSupport())
+						fish.dies();
+					processExit(fish);
+				}
 			}
 
 			// salva quantos tiques já passaram até agora
@@ -92,10 +127,39 @@ public class GameEngine implements Observer {
 
 			}
 
+			// vitoria
+			if (smallFishExited && bigFishExited) {
+				loadNextLevel();
+				// receta p a prox room
+				smallFishExited = false;
+				bigFishExited = false;
+			}
+			
 			// chama o update da interface gráfica
 			ImageGUI.getInstance().update();
 		}
 	}
+	
+	private void processExit(GameCharacter fish) {
+		// ve se tem uma door embaixo do peixe
+		for (GameObject obj : currentRoom.getObjectsAt(fish.getPosition())) {
+			
+			// esta encima dela
+			if (obj instanceof Door) {
+				
+				// remove o peixe da room e da tela
+				currentRoom.removeObject(fish); 
+				ImageGUI.getInstance().removeImage(fish); 
+					
+				if (fish instanceof SmallFish) smallFishExited = true;
+				if (fish instanceof BigFish) bigFishExited = true;
+					
+				// troca para o outro peixe
+				currentRoom.nextFish();
+				break;
+				}
+			}
+		}
 
 	// incrementa o contador de ticks e aplica a gravidade aos objetos móveis
 	private void processTick() {
