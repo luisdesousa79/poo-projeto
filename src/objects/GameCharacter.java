@@ -113,7 +113,8 @@ public abstract class GameCharacter extends GameObject {
 			}
 		}
 	}
-
+	
+	// método abstrato do canPush, implementado nas classes filhas
 	public abstract boolean canPush(Pushable object, Vector2D dir);
 
 	// função que implementa a morte dos peixes

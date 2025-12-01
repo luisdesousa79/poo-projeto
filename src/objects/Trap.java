@@ -15,7 +15,7 @@ public class Trap extends HeavyObject {
 
 	@Override
 	public int getLayer() {
-		return 1; // verificar se está correcto
+		return 2; // verificar se está correcto
 	}
 
 }
