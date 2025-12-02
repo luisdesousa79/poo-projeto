@@ -7,6 +7,8 @@ import pt.iscte.poo.utils.Vector2D;
 
 public class Crab extends MovableObject implements Sinkable {
 
+	private boolean justSpawned = true;
+	
 	public Crab(Room room) {
 		super(room);
 	}
@@ -39,6 +41,13 @@ public class Crab extends MovableObject implements Sinkable {
 	}
 	
 	public void moveEnemy() {
+		
+		// faz com que ele so se mova no turno depois de nascer
+		if (justSpawned) {
+            justSpawned = false; 
+            return; 
+        }
+		
 		// escolher direção horizontal aleatória 
 		double random = Math.random();
 		Direction dir = (random < 0.5) ? Direction.LEFT : Direction.RIGHT;
