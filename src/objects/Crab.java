@@ -48,7 +48,7 @@ public class Crab extends MovableObject implements Sinkable {
             return; 
         }
 		
-		// escolher direção horizontal aleatória 
+		// escolher uma direção horizontal aleatória 
 		double random = Math.random();
 		Direction dir = (random < 0.5) ? Direction.LEFT : Direction.RIGHT;
 		Point2D newPos = getPosition().plus(dir.asVector());
@@ -72,31 +72,27 @@ public class Crab extends MovableObject implements Sinkable {
 		}
 	}
 
-	// Método auxiliar para validar movimento (atravessa buracos, bloqueia em paredes)
 	private boolean isValidMovement(Point2D p) {
-		// Não sai do mapa
+		// não sai do mapa
 		if (p.getX() < 0 || p.getX() >= 10) return false;
 
-		// Se tiver parede ou obstáculo imóvel
+		// se tiver um objeto imovel que nao seja a parede com buracos nao move
 		if (getRoom().hasImmovableAt(p)) {
-			// Exceção: O caranguejo é pequeno, atravessa parede com buraco (HoledWall)
 			if (getRoom().hasHoledWallAt(p)) {
 				return true;
 			}
-			return false; // Parede normal bloqueia
+			return false; 
 		}
 
-		// Não entra em objetos móveis (pedras, caixas, outros inimigos)
+		// nao se move para objetos moveis exeto os peixes
 		if (getRoom().hasMovableAt(p)) {
-			// Mas pode "entrar" nos peixes para os atacar (tratado no moveEnemy)
 			if (isSmallFishAt(p) || isBigFishAt(p)) return true;
 			return false;
 		}
-
-		return true; // Caminho livre (água)
+		// caminho livre
+		return true; 
 	}
 		
-	// Helpers para detetar peixes (já que o getElementAt ignora o Singleton às vezes dependendo da implementação)
 	private boolean isSmallFishAt(Point2D p) {
 		return SmallFish.getInstance().getPosition().equals(p);
 	}
