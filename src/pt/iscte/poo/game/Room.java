@@ -115,19 +115,20 @@ public class Room {
 					switch (c) {
 
 					case 'B': // Big fish
-						BigFish bf = BigFish.getInstance();
-						bf.setPosition(pos);
-						bf.setRoom(r);
-						r.addObject(bf);
+						//BigFish bf = BigFish.getInstance();
+						//bf.setPosition(pos);
+						//bf.setRoom(r);
 						r.setBigFishStartingPosition(pos);
+						//r.addObject(bf);
+						
 						break;
 
 					case 'S': // Small fish
-						SmallFish sf = SmallFish.getInstance();
-						sf.setPosition(pos);
-						sf.setRoom(r);
-						r.addObject(sf);
+						//SmallFish sf = SmallFish.getInstance();
+						//sf.setPosition(pos);
+						//sf.setRoom(r);
 						r.setSmallFishStartingPosition(pos);
+						//r.addObject(sf);
 						break;
 
 					case 'W': // Wall

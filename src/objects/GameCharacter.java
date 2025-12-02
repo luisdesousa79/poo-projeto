@@ -179,7 +179,7 @@ public abstract class GameCharacter extends GameObject {
 				return false;
 			}
 
-			// objetos leves podem ser muitos → permitido
+			// o peixe grande pode suportar vários objetos leves 
 			return true;
 		}
 

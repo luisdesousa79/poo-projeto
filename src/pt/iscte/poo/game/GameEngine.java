@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import objects.BigFish;
-import objects.GameCharacter;
-import objects.SmallFish;
-import objects.GameObject;
 import objects.Door;
+import objects.GameCharacter;
+import objects.GameObject;
+import objects.SmallFish;
 import pt.iscte.poo.gui.ImageGUI;
 import pt.iscte.poo.observer.Observed;
 import pt.iscte.poo.observer.Observer;
@@ -22,21 +22,35 @@ public class GameEngine implements Observer {
 	private int lastTickProcessed = 0;
 
 	private boolean smallFishExited = false;
-	private boolean bigFishExited = false;
+    private boolean bigFishExited = false;
 
 	public GameEngine() {
+		// mapa que associa cada nome de ficheiro "room?.txt" a um objeto Room
 		rooms = new HashMap<String, Room>();
 		loadGame();
+		// define o nível inicial atriuir a currentRoom o Room lido a partir de "room0.txt"
 		currentRoom = rooms.get("room0.txt");
 		updateGUI();
-		SmallFish.getInstance().setRoom(currentRoom);
-		BigFish.getInstance().setRoom(currentRoom);
+		//SmallFish.getInstance().setRoom(currentRoom);
+		//BigFish.getInstance().setRoom(currentRoom);
+		SmallFish sf = SmallFish.getInstance();
+		sf.setRoom(currentRoom);
+		sf.setPosition(currentRoom.getSmallFishStartingPosition());
+		currentRoom.addObject(sf);
+		
+		BigFish bf = BigFish.getInstance();
+		bf.setRoom(currentRoom);
+		bf.setPosition(currentRoom.getBigFishStartingPosition());
+		currentRoom.addObject(bf);
+		
 	}
 	
-	
-
 	private void loadGame() {
+		//cria uma lista com todos os ficheiros que estão na pasta "./rooms"
 		File[] files = new File("./rooms").listFiles();
+		// itera sobre os ficheiros 
+		// e preenche o dicionário rooms com a associação entre o nome dos ficheiros
+		// e o objeto Room lido a partir deles
 		for (File f : files) {
 			rooms.put(f.getName(), Room.readRoom(f, this));
 		}
@@ -48,7 +62,7 @@ public class GameEngine implements Observer {
 		// pega a room atual
 		String roomAtual = currentRoom.getName();
 			
-		// corta os 4 caracteres de cada ponta deixando so o numero da room atual
+		// corta os 4 caracteres de cada ponta deixando só o número da room atual
 		String numRoomAtualStr = roomAtual.substring(4, roomAtual.length() - 4);
 				
 		// converte para int
@@ -58,7 +72,7 @@ public class GameEngine implements Observer {
 		int numRoomSeguinte = numRoomAtual + 1;
 		String roomSeguinte = "room" + numRoomSeguinte + ".txt";
 
-		// ve se tem a prox room
+		// vê se há a próxima room
 		if (rooms.containsKey(roomSeguinte)) {
 					
 			// limpa a tela
@@ -67,13 +81,19 @@ public class GameEngine implements Observer {
 			// passa de room
 			currentRoom = rooms.get(roomSeguinte);
 					
-			// poe denovo os peixes na room
+			// põe de novo os peixes na room
 			SmallFish.getInstance().setRoom(currentRoom);
 			BigFish.getInstance().setRoom(currentRoom);
 			
-			// redireciona eles para o posicao de start daquela room
+			// redireciona os peixes para o posicão inicial daquela room
 			SmallFish.getInstance().setPosition(currentRoom.getSmallFishStartingPosition());
 			BigFish.getInstance().setPosition(currentRoom.getBigFishStartingPosition());
+			
+			// volta a adicionar os peixes à room que está a ser carregada
+			currentRoom.addObject(SmallFish.getInstance());
+			currentRoom.addObject(BigFish.getInstance());
+			
+			
 					
 			updateGUI();
 					
