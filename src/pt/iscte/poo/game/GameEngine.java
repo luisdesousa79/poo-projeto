@@ -14,7 +14,6 @@ import pt.iscte.poo.observer.Observed;
 import pt.iscte.poo.observer.Observer;
 import pt.iscte.poo.utils.Direction;
 
-
 public class GameEngine implements Observer {
 
 	private Map<String, Room> rooms;
@@ -22,13 +21,14 @@ public class GameEngine implements Observer {
 	private int lastTickProcessed = 0;
 
 	private boolean smallFishExited = false;
-    private boolean bigFishExited = false;
+	private boolean bigFishExited = false;
 
 	public GameEngine() {
 		// mapa que associa cada nome de ficheiro "room?.txt" a um objeto Room
 		rooms = new HashMap<String, Room>();
 		loadGame();
-		// define o nível inicial e atribui a currentRoom o Room lido a partir de "room0.txt"
+		// define o nível inicial e atribui a currentRoom o Room lido a partir de
+		// "room0.txt"
 		currentRoom = rooms.get("room0.txt");
 		updateGUI();
 		// SmallFish.getInstance().setRoom(currentRoom);
@@ -37,18 +37,18 @@ public class GameEngine implements Observer {
 		sf.setRoom(currentRoom);
 		sf.setPosition(currentRoom.getSmallFishStartingPosition());
 		currentRoom.addObject(sf);
-		
+
 		BigFish bf = BigFish.getInstance();
 		bf.setRoom(currentRoom);
 		bf.setPosition(currentRoom.getBigFishStartingPosition());
 		currentRoom.addObject(bf);
-		
+
 	}
-	
+
 	private void loadGame() {
 		// cria uma lista com todos os ficheiros que estão na pasta "./rooms"
 		File[] files = new File("./rooms").listFiles();
-		// itera sobre os ficheiros 
+		// itera sobre os ficheiros
 		// e preenche o dicionário rooms com a associação entre o nome dos ficheiros
 		// e o objeto Room lido a partir deles
 		for (File f : files) {
@@ -58,50 +58,50 @@ public class GameEngine implements Observer {
 
 	// carrega o nível seguinte
 	private void loadNextLevel() {
-		
+
 		// pega a room atual
 		String roomAtual = currentRoom.getName();
-			
+
 		// corta os 4 caracteres de cada ponta deixando só o número da room atual
 		String numRoomAtualStr = roomAtual.substring(4, roomAtual.length() - 4);
-				
+
 		// converte para int
 		int numRoomAtual = Integer.parseInt(numRoomAtualStr);
-				
+
 		// define a proxima room
 		int numRoomSeguinte = numRoomAtual + 1;
 		String roomSeguinte = "room" + numRoomSeguinte + ".txt";
 
 		// vê se há a próxima room
 		if (rooms.containsKey(roomSeguinte)) {
-					
+
 			// limpa a tela
 			ImageGUI.getInstance().clearImages();
-					
+
 			// passa de room
 			currentRoom = rooms.get(roomSeguinte);
-					
+
 			// inicializa os peixes na nova Room
 			SmallFish.getInstance().setRoom(currentRoom);
 			BigFish.getInstance().setRoom(currentRoom);
-			
+
 			// redireciona os peixes para o posicão inicial daquela room
 			SmallFish.getInstance().setPosition(currentRoom.getSmallFishStartingPosition());
 			BigFish.getInstance().setPosition(currentRoom.getBigFishStartingPosition());
-			
+
 			// volta a adicionar os peixes à room que está a ser carregada
 			currentRoom.addObject(SmallFish.getInstance());
 			currentRoom.addObject(BigFish.getInstance());
-			
+
 			updateGUI();
-					
+
 			ImageGUI.getInstance().setStatusMessage("Room " + numRoomSeguinte);
-					
+
 		} else {
 			// se n tiver mais rooms, venceu tudo
 			ImageGUI.getInstance().setStatusMessage("Acabaram todas as rooms. Parabéns você venceu!!!! :)");
 		}
-		
+
 	}
 
 	// este é o método que trata das teclas e dos ticks
@@ -120,13 +120,13 @@ public class GameEngine implements Observer {
 			// se se carregar numa tecla de direcção, movimenta-se o peixe actual
 			if (Direction.isDirection(k)) {
 				GameCharacter fish = currentRoom.getActiveFish();
-				
+
 				boolean fishSaiu = false;
 				// ve se o peixe saiu ou nao
 				if ((fish instanceof SmallFish && smallFishExited) || (fish instanceof BigFish && bigFishExited)) {
 					fishSaiu = true;
 				}
-					
+
 				// mexe o peixe se ele nao saiu
 				if (!fishSaiu) {
 					fish.move(Direction.directionFor(k).asVector());
@@ -137,88 +137,84 @@ public class GameEngine implements Observer {
 					processExit(fish);
 				}
 			}
+		}
 
-			// salva quantos tiques já passaram até agora
-			int t = ImageGUI.getInstance().getTicks();
+		// salva quantos tiques já passaram até agora
+		int t = ImageGUI.getInstance().getTicks();
 
-			// processa os ticks passados desde o último até ao t
-			while (lastTickProcessed < t) {
-				processTick();
-			}
-			
-		
-			
-			// vitória
-			if (smallFishExited && bigFishExited) {
-				loadNextLevel();
-				// reset p a prox room
-				smallFishExited = false;
-				bigFishExited = false;
-			}
-			
-			// chama o update da interface gráfica
-			ImageGUI.getInstance().update();
-			
-		
+		// processa os ticks passados desde o último até ao t
+		while (lastTickProcessed < t) {
+			processTick();
+		}
+
+		// vitória
+		if (smallFishExited && bigFishExited) {
+			loadNextLevel();
+			// reset p a prox room
+			smallFishExited = false;
+			bigFishExited = false;
+		}
+
+		// chama o update da interface gráfica
+		ImageGUI.getInstance().update();
+
+	}
+
+	// incrementa o contador de ticks e aplica a gravidade aos objetos móveis
+	private void processTick() {
+
+		lastTickProcessed++;
+		// implementa o boiar da bóia
+		currentRoom.applyBuoyancy();
+
+		// implementa o afundar dos objetos Sinkable
+		currentRoom.applySinking();
+
+		// implementa a gravidade nos objectos da Room
+		currentRoom.applyGravity();
+
+		// poe os inimigos para se moverem
+		currentRoom.processEnemies();
+
+		// verifica se o peixe pequeno pode suportar os objetos móveis acima dele
+		if (!SmallFish.getInstance().canSupport())
+			SmallFish.getInstance().dies();
+
+		// verifica se o peixe grande pode suportar os objetos móveis acima dele
+		if (!BigFish.getInstance().canSupport())
+			BigFish.getInstance().dies();
+	}
+
+	// atualiza os objetos da interface gráfica
+	public void updateGUI() {
+		if (currentRoom != null) {
+			ImageGUI.getInstance().clearImages();
+			ImageGUI.getInstance().addImages(currentRoom.getObjects());
 		}
 	}
-	
-	// incrementa o contador de ticks e aplica a gravidade aos objetos móveis
-		private void processTick() {
-			
-			
-			lastTickProcessed++;
-			// implementa o boiar da bóia
-			currentRoom.applyBuoyancy();
-			
-			// implementa o afundar dos objetos Sinkable
-			currentRoom.applySinking();
-			
-			// implementa a gravidade nos objectos da Room
-			currentRoom.applyGravity();
-			
-			// poe os inimigos para se moverem
-			currentRoom.processEnemies();
-			
-			// verifica se o peixe pequeno pode suportar os objetos móveis acima dele
-			if (!SmallFish.getInstance().canSupport())
-				SmallFish.getInstance().dies();
-			
-			// verifica se o peixe grande pode suportar os objetos móveis acima dele
-			if (!BigFish.getInstance().canSupport())
-				BigFish.getInstance().dies();
-		}
 
-		// atualiza os objetos da interface gráfica
-		public void updateGUI() {
-			if (currentRoom != null) {
-				ImageGUI.getInstance().clearImages();
-				ImageGUI.getInstance().addImages(currentRoom.getObjects());
-			}
-		}
-	
 	// verifica se o peixe está na posição de Exit
 	private void processExit(GameCharacter fish) {
 		// verifica se uma Door está na posição de peixe
 		for (GameObject obj : currentRoom.getObjectsAt(fish.getPosition())) {
-			
+
 			// está na posição de Door
 			if (obj instanceof Door) {
-				
+
 				// remove o peixe da room e da tela
-				currentRoom.removeObject(fish); 
-				ImageGUI.getInstance().removeImage(fish); 
-					
-				if (fish instanceof SmallFish) smallFishExited = true;
-				if (fish instanceof BigFish) bigFishExited = true;
-					
+				currentRoom.removeObject(fish);
+				ImageGUI.getInstance().removeImage(fish);
+
+				if (fish instanceof SmallFish)
+					smallFishExited = true;
+				if (fish instanceof BigFish)
+					bigFishExited = true;
+
 				// troca para o outro peixe
 				currentRoom.nextFish();
 				break;
-				}
 			}
 		}
-
-	
+	}
 
 }
