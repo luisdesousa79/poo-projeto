@@ -31,8 +31,8 @@ public class GameEngine implements Observer {
 		// define o nível inicial atriuir a currentRoom o Room lido a partir de "room0.txt"
 		currentRoom = rooms.get("room0.txt");
 		updateGUI();
-		//SmallFish.getInstance().setRoom(currentRoom);
-		//BigFish.getInstance().setRoom(currentRoom);
+		// SmallFish.getInstance().setRoom(currentRoom);
+		// BigFish.getInstance().setRoom(currentRoom);
 		SmallFish sf = SmallFish.getInstance();
 		sf.setRoom(currentRoom);
 		sf.setPosition(currentRoom.getSmallFishStartingPosition());
@@ -184,7 +184,9 @@ public class GameEngine implements Observer {
 	// incrementa o contador de ticks e aplica a gravidade aos objetos móveis
 	private void processTick() {
 		lastTickProcessed++;
-
+		// implementa o boiar da bóia
+		currentRoom.applyBuoyancy();
+		
 		// implementa a gravidade nos objectos da Room
 		currentRoom.applyGravity();
 		

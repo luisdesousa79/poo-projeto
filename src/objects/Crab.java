@@ -10,7 +10,7 @@ public class Crab extends GameObject implements Sinkable {
 
 	@Override
 	public String getName() {
-		return "crab"; 
+		return "krab"; 
 	}
 
 	@Override

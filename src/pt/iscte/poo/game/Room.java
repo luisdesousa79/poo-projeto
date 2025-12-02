@@ -8,6 +8,7 @@ import java.util.Scanner;
 import objects.Anchor;
 import objects.BigFish;
 import objects.Bomb;
+import objects.Buoy;
 import objects.Cup;
 import objects.Door;
 import objects.GameCharacter;
@@ -115,20 +116,20 @@ public class Room {
 					switch (c) {
 
 					case 'B': // Big fish
-						//BigFish bf = BigFish.getInstance();
-						//bf.setPosition(pos);
-						//bf.setRoom(r);
+						// BigFish bf = BigFish.getInstance();
+						// bf.setPosition(pos);
+						// bf.setRoom(r);
 						r.setBigFishStartingPosition(pos);
-						//r.addObject(bf);
-						
+						// r.addObject(bf);
+
 						break;
 
 					case 'S': // Small fish
-						//SmallFish sf = SmallFish.getInstance();
-						//sf.setPosition(pos);
-						//sf.setRoom(r);
+						// SmallFish sf = SmallFish.getInstance();
+						// sf.setPosition(pos);
+						// sf.setRoom(r);
 						r.setSmallFishStartingPosition(pos);
-						//r.addObject(sf);
+						// r.addObject(sf);
 						break;
 
 					case 'W': // Wall
@@ -195,6 +196,12 @@ public class Room {
 						GameObject door = new objects.Door(r);
 						door.setPosition(pos);
 						r.addObject(door);
+						break;
+
+					case 'U':
+						GameObject buoy = new Buoy(r);
+						buoy.setPosition(pos);
+						r.addObject(buoy);
 						break;
 
 					case ' ':
@@ -271,8 +278,6 @@ public class Room {
 		return true;
 	}
 
-	
-
 	// função para verificar se um dado ponto contém um objeto imóvel
 	public boolean hasImmovableAt(Point2D p) {
 		List<GameObject> objs = getObjectsAt(p);
@@ -296,21 +301,21 @@ public class Room {
 		}
 		return false;
 	}
-	
-	// este método diz que objeto está numa determinada posição, ignorando a
-		// água
-		public GameObject getElementAt(Point2D position) {
-			for (GameObject obj : objects) {
-				if (obj.getPosition().equals(position)) {
-					// ignora a água
-					if (obj instanceof Water)
-						continue;
 
-					return obj;
-				}
+	// este método diz que objeto está numa determinada posição, ignorando a
+	// água
+	public GameObject getElementAt(Point2D position) {
+		for (GameObject obj : objects) {
+			if (obj.getPosition().equals(position)) {
+				// ignora a água
+				if (obj instanceof Water)
+					continue;
+
+				return obj;
 			}
-			return null; // da null se a posicao é agua
 		}
+		return null; // da null se a posicao é agua
+	}
 
 	// verifica se uma determinada posição contém um muro perfurado
 	public boolean hasHoledWallAt(Point2D pos) {
@@ -329,7 +334,6 @@ public class Room {
 		}
 		return false;
 	}
-
 
 	// este método aplica a gravidade (movimento para baixo de uma unidade) aos
 	// objetos do Room
@@ -417,7 +421,20 @@ public class Room {
 		return stack;
 	}
 
-	public int getLevelNumber() {
-		return levelNumber;
+	// função que aplica o boiar aos objetos que boiam (neste caso, apenas à bóia)
+	public void applyBuoyancy() {
+			for (GameObject object : objects) {
+				if (object instanceof Buoy) {
+					//deve boiar se não tiver nenhum objeto móvel por cima
+					Point2D above = object.getPosition().plus(Direction.UP.asVector());
+					if (isOnlyWaterAt(above)) {
+						object.setPosition(above);
+					}
+			}
+		}
 	}
+
+	// public int getLevelNumber() {
+	// return levelNumber;
+	// }
 }
