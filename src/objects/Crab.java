@@ -2,7 +2,7 @@ package objects;
 
 import pt.iscte.poo.game.Room;
 
-public class Crab extends GameObject implements Sinkable, Buoyable {
+public class Crab extends GameObject implements Sinkable {
 
 	public Crab(Room room) {
 		super(room);

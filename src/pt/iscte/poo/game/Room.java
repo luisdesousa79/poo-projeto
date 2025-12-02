@@ -9,6 +9,7 @@ import objects.Anchor;
 import objects.BigFish;
 import objects.Bomb;
 import objects.Cup;
+import objects.Door;
 import objects.GameCharacter;
 import objects.GameObject;
 import objects.HeavyObject;
@@ -23,7 +24,6 @@ import objects.Trap;
 import objects.Trunk;
 import objects.Wall;
 import objects.Water;
-import objects.Door;
 import pt.iscte.poo.utils.Direction;
 import pt.iscte.poo.utils.Point2D;
 
@@ -35,8 +35,8 @@ public class Room {
 	private Point2D smallFishStartingPosition;
 	private Point2D bigFishStartingPosition;
 	private int activeFishIndex;
-	
-	private int levelNumber; 
+
+	private int levelNumber;
 
 	public Room() {
 		objects = new ArrayList<GameObject>();
@@ -189,12 +189,12 @@ public class Room {
 						wh.setPosition(pos);
 						r.addObject(wh);
 						break;
-						
-					case 'E': 
-					    GameObject door = new objects.Door(r);
-					    door.setPosition(pos);
-					    r.addObject(door);
-					    break;
+
+					case 'E':
+						GameObject door = new objects.Door(r);
+						door.setPosition(pos);
+						r.addObject(door);
+						break;
 
 					case ' ':
 
@@ -270,20 +270,7 @@ public class Room {
 		return true;
 	}
 
-	// este método diz que objetos estão numa determinada posição, ignorando a
-	// água
-	public GameObject getElementAt(Point2D position) {
-		for (GameObject obj : objects) {
-			if (obj.getPosition().equals(position)) {
-				// ignora a água
-				if (obj instanceof Water)
-					continue;
-
-				return obj;
-			}
-		}
-		return null; // da null se a posicao é agua
-	}
+	
 
 	// função para verificar se um dado ponto contém um objeto imóvel
 	public boolean hasImmovableAt(Point2D p) {
@@ -308,6 +295,21 @@ public class Room {
 		}
 		return false;
 	}
+	
+	// este método diz que objeto está numa determinada posição, ignorando a
+		// água
+		public GameObject getElementAt(Point2D position) {
+			for (GameObject obj : objects) {
+				if (obj.getPosition().equals(position)) {
+					// ignora a água
+					if (obj instanceof Water)
+						continue;
+
+					return obj;
+				}
+			}
+			return null; // da null se a posicao é agua
+		}
 
 	// verifica se uma determinada posição contém um muro perfurado
 	public boolean hasHoledWallAt(Point2D pos) {
@@ -317,6 +319,16 @@ public class Room {
 		}
 		return false;
 	}
+
+	// verifica se uma determinada posição contém uma instância de taça
+	public boolean hasCupAt(Point2D pos) {
+		for (GameObject o : getObjectsAt(pos)) {
+			if (o instanceof HoledWall)
+				return true;
+		}
+		return false;
+	}
+
 
 	// este método aplica a gravidade (movimento para baixo de uma unidade) aos
 	// objetos do Room
@@ -361,7 +373,7 @@ public class Room {
 						if (objetoAtingido instanceof GameCharacter) {
 							// agora peixe esta suportando a bomba
 							b.setFalling(false);
-		
+
 						}
 
 						// caso contrário, explode
@@ -390,20 +402,20 @@ public class Room {
 
 		}
 	}
-	
+
 	public List<MovableObject> getMovableObjectsAbove(Point2D pos) {
-	    
+
 		List<MovableObject> stack = new ArrayList<>();
 		Point2D above = pos.plus(Direction.UP.asVector());
-		
-		while(getElementAt(above) instanceof MovableObject) {
+
+		while (getElementAt(above) instanceof MovableObject) {
 			stack.add((MovableObject) getElementAt(above));
-		    above = above.plus(Direction.UP.asVector());
+			above = above.plus(Direction.UP.asVector());
 		}
-	    
-	    return stack;
+
+		return stack;
 	}
-	
+
 	public int getLevelNumber() {
 		return levelNumber;
 	}

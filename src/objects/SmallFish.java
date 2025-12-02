@@ -44,8 +44,12 @@ public class SmallFish extends GameCharacter {
 	    
 	    Point2D objectPosition = ((GameObject) obj).getPosition();
 	    Point2D nextToObject = objectPosition.plus(dir);
-	    		
+	    
 	    if(!getRoom().isOnlyWaterAt(nextToObject)) {
+	    	if(getRoom().getElementAt(objectPosition) instanceof Cup && getRoom().hasHoledWallAt(nextToObject)) {
+	    		return true;
+	    	}
+	    	
 	    	return false;
 	    }
 	    

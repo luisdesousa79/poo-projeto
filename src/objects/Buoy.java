@@ -4,7 +4,7 @@ import pt.iscte.poo.game.Room;
 import pt.iscte.poo.utils.Direction;
 import pt.iscte.poo.utils.Point2D;
 
-public class Buoy extends LightObject implements Sinkable, Buoyable {
+public class Buoy extends LightObject implements Sinkable {
 	
 	public Buoy(Room room) {
 		super(room);
@@ -21,7 +21,6 @@ public class Buoy extends LightObject implements Sinkable, Buoyable {
 		return 2; //qual é a Layer do Buoy?
 	}
 	
-	@Override
 	public void buoys() {
 		//deve boiar exceto se estiver a suportar qualquer objeto móvel
 		Point2D above = this.getPosition().plus(Direction.UP.asVector());

@@ -39,15 +39,29 @@ public abstract class GameCharacter extends GameObject {
 		// se é um objecto imóvel (fixo)
 		if (getRoom().hasImmovableAt(destination)) {
 
-			GameObject object = getRoom().getElementAt(destination);
-
+			
 			// se o objeto no destino for uma HoledWall e o peixe for o pequeno
-
-			if (object instanceof HoledWall && this instanceof SmallFish) {
-				// Peixe pequeno atravessa o buraco
+			if (getRoom().hasHoledWallAt(destination) && this instanceof SmallFish) {
+				//se há uma taça na parede perfurada, empurra a taça
+				if (getRoom().hasCupAt(destination)) {
+					List<GameObject> objectsAtDestination = getRoom().getObjectsAt(destination);
+					for (GameObject object : objectsAtDestination) {
+						if(object instanceof Cup) {
+							boolean pushed = ((Cup) object).push(dir);
+							// caso o objeto tenha sido empurrado, move-se para a posição anterior dele
+							if (pushed) {
+								setPosition(destination);
+							}
+							break;
+						}
+					}
+				}
+				// se não tiver taça, o Peixe pequeno atravessa o buraco
 				setPosition(destination);
 				return;
 			}
+			
+			
 
 			// se for outro objeto imóvel, bloqueia movimento
 			return;
@@ -113,7 +127,7 @@ public abstract class GameCharacter extends GameObject {
 			}
 		}
 	}
-	
+
 	// método abstrato do canPush, implementado nas classes filhas
 	public abstract boolean canPush(Pushable object, Vector2D dir);
 
@@ -121,7 +135,7 @@ public abstract class GameCharacter extends GameObject {
 	public void dies() {
 		getRoom().removeObject(this);
 		this.isDead = true;
-		
+
 		// volta ao início do nível
 	}
 
@@ -168,7 +182,7 @@ public abstract class GameCharacter extends GameObject {
 			// objetos leves podem ser muitos → permitido
 			return true;
 		}
-		
+
 		return true;
 	}
 
