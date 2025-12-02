@@ -187,6 +187,9 @@ public class GameEngine implements Observer {
 		// implementa o boiar da bóia
 		currentRoom.applyBuoyancy();
 		
+		// implementa o afundar dos objetos Sinkable
+		currentRoom.applySinking();
+		
 		// implementa a gravidade nos objectos da Room
 		currentRoom.applyGravity();
 		

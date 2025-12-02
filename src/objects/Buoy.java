@@ -5,38 +5,36 @@ import pt.iscte.poo.utils.Direction;
 import pt.iscte.poo.utils.Point2D;
 
 public class Buoy extends LightObject implements Sinkable {
-	
+
 	public Buoy(Room room) {
 		super(room);
-		
+
 	}
-	
+
 	@Override
 	public String getName() {
 		return "buoy";
 	}
-	
+
 	@Override
 	public int getLayer() {
-		return 1; //qual é a Layer do Buoy?
+		return 1; // qual é a Layer do Buoy?
 	}
-	
-	
-	
+
+
 	@Override
 	public void sinks() {
-		
+
 		Point2D above = this.getPosition().plus(Direction.UP.asVector());
 		Point2D below = this.getPosition().plus(Direction.DOWN.asVector());
-		
-		// se tiver um objeto móvel em cima, desce de posição(afunda)
+
+		// se tiver um objeto móvel em cima e água em baixo, desce de posição(afunda)
 		// será que tambémm tenho de mudar o applyGravity() para afundarem em bloco?
 		if (getRoom().hasMovableAt(above)) {
-			this.setPosition(below);
+			if (getRoom().isOnlyWaterAt(below)) {
+				this.setPosition(below);
+			}
 		}
-		
 	}
-	
-	
-	
+
 }

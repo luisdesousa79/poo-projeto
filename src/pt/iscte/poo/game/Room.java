@@ -17,6 +17,7 @@ import objects.HeavyObject;
 import objects.HoledWall;
 import objects.ImmovableObject;
 import objects.MovableObject;
+import objects.Sinkable;
 import objects.SmallFish;
 import objects.SteelHorizontal;
 import objects.SteelVertical;
@@ -432,6 +433,15 @@ public class Room {
 					}
 			}
 		}
+	}
+	
+	// função que aplica o afundar aos objetos Sinkable
+	public void applySinking() {
+	    for (GameObject object : objects) {
+	        if (object instanceof Sinkable) {
+	            ((Sinkable)object).sinks();
+	        }
+	    }
 	}
 
 	// public int getLevelNumber() {
