@@ -316,10 +316,10 @@ public class Room {
 				return obj;
 			}
 		}
-		return null; // da null se a posicao é agua
+		return null; // dá null se a posicao é agua
 	}
 
-	// verifica se uma determinada posição contém um muro perfurado
+	// verifica se uma determinada posição contém uma instância de muro perfurado
 	public boolean hasHoledWallAt(Point2D pos) {
 		for (GameObject o : getObjectsAt(pos)) {
 			if (o instanceof HoledWall)
@@ -378,7 +378,7 @@ public class Room {
 
 						// se a bomba colide com um peixe, o peixe suporta a bomba
 						if (objetoAtingido instanceof GameCharacter) {
-							// agora peixe esta suportando a bomba
+							// agora peixe está suportando a bomba
 							b.setFalling(false);
 
 						}
@@ -388,7 +388,7 @@ public class Room {
 					}
 				}
 
-				// vamos verificar se, na queda, há um objecto pesado cai em cima do tronco
+				// vamos verificar se, na queda, um objecto pesado cai em cima do tronco
 				if (object instanceof HeavyObject) {
 
 					Point2D below = destination.plus(Direction.DOWN.asVector());
@@ -458,7 +458,4 @@ public class Room {
 	    }
 	}
 	
-	// public int getLevelNumber() {
-	// return levelNumber;
-	// }
 }

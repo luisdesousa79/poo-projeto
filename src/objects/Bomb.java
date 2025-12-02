@@ -64,10 +64,10 @@ public class Bomb extends LightObject {
 				}
 
 				if (obj instanceof GameCharacter) {
-					// mata o peixe
+					// mata o peixe na área de explosão
 					((GameCharacter) obj).dies();
 				} else {
-					// remove qualquer objeto
+					// remove qualquer objeto na área de explosão
 					getRoom().removeObject(obj);
 				}
 			}

@@ -6,5 +6,5 @@ W WW WWWWW
 W   S W  W 
 W   B W  E
 W     W  W
-W        W
+W R      W
 WWWWWWWWWW

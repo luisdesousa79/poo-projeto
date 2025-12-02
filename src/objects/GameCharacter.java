@@ -42,7 +42,7 @@ public abstract class GameCharacter extends GameObject {
 			
 			// se o objeto no destino for uma HoledWall e o peixe for o pequeno
 			if (getRoom().hasHoledWallAt(destination) && this instanceof SmallFish) {
-				//se há uma taça na parede perfurada, empurra a taça
+				//se há uma taça na parede perfurada, tenta empurrar a taça
 				if (getRoom().hasCupAt(destination)) {
 					List<GameObject> objectsAtDestination = getRoom().getObjectsAt(destination);
 					for (GameObject object : objectsAtDestination) {
@@ -174,7 +174,7 @@ public abstract class GameCharacter extends GameObject {
 
 		if (this instanceof BigFish) {
 
-			// só pode 1 objeto pesado
+			// só pode suportar 1 objeto pesado
 			if (numberHeavyObjects > 1) {
 				return false;
 			}

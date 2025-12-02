@@ -81,7 +81,7 @@ public class GameEngine implements Observer {
 			// passa de room
 			currentRoom = rooms.get(roomSeguinte);
 					
-			// põe de novo os peixes na room
+			// inicializa os peixes na nova Room
 			SmallFish.getInstance().setRoom(currentRoom);
 			BigFish.getInstance().setRoom(currentRoom);
 			
@@ -93,15 +93,13 @@ public class GameEngine implements Observer {
 			currentRoom.addObject(SmallFish.getInstance());
 			currentRoom.addObject(BigFish.getInstance());
 			
-			
-					
 			updateGUI();
 					
 			ImageGUI.getInstance().setStatusMessage("Room " + numRoomSeguinte);
 					
 		} else {
 			// se n tiver mais rooms, venceu tudo
-			ImageGUI.getInstance().setStatusMessage("Acabaram todas as rooms. Parabens voce venceu!!!! :)");
+			ImageGUI.getInstance().setStatusMessage("Acabaram todas as rooms. Parabéns você venceu!!!! :)");
 		}
 		
 	}
@@ -132,8 +130,10 @@ public class GameEngine implements Observer {
 				// mexe o peixe se ele nao saiu
 				if (!fishSaiu) {
 					fish.move(Direction.directionFor(k).asVector());
+					// verifica se o peixe pode suportar os objetos da nova posição
 					if (!fish.canSupport())
 						fish.dies();
+					// verifica se está em posição de saída de nível
 					processExit(fish);
 				}
 			}
@@ -144,13 +144,12 @@ public class GameEngine implements Observer {
 			// processa os ticks passados desde o último até ao t
 			while (lastTickProcessed < t) {
 				processTick();
-
 			}
 
-			// vitoria
+			// vitória
 			if (smallFishExited && bigFishExited) {
 				loadNextLevel();
-				// receta p a prox room
+				// reset p a prox room
 				smallFishExited = false;
 				bigFishExited = false;
 			}
@@ -160,11 +159,12 @@ public class GameEngine implements Observer {
 		}
 	}
 	
+	// verifica se o peixe está na posição de Exit
 	private void processExit(GameCharacter fish) {
-		// ve se tem uma door embaixo do peixe
+		// verifica se uma Door está na posição de peixe
 		for (GameObject obj : currentRoom.getObjectsAt(fish.getPosition())) {
 			
-			// esta encima dela
+			// está na posição de Door
 			if (obj instanceof Door) {
 				
 				// remove o peixe da room e da tela

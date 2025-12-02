@@ -31,7 +31,7 @@ public class Stone extends HeavyObject {
         // tenta mover a pedra
         boolean moved = super.push(dir);
 
-        // se a pedra se moveu e o movimento foi horizontal e ele ainda nao spownou, spawna o caranguejo
+        // se a pedra se moveu e o movimento foi horizontal e ele ainda nao gerou, gera o caranguejo
         if (moved && dir.getY() == 0 && !hasSpawnedCrab) {
             spawnCrab(oldPos);
         }
@@ -44,7 +44,7 @@ public class Stone extends HeavyObject {
 		// pega o local que o caranguejo vai nascer
         Point2D spawnPos = getPosition().plus(pt.iscte.poo.utils.Direction.UP.asVector());
 
-        // verifica se nao tem nada la
+        // verifica se não tem nada lá
         if (getRoom().isOnlyWaterAt(spawnPos)) {
             Crab babyCrab = new Crab(getRoom());
             babyCrab.setPosition(spawnPos);
