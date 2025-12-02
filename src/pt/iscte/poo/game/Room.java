@@ -9,6 +9,7 @@ import objects.Anchor;
 import objects.BigFish;
 import objects.Bomb;
 import objects.Buoy;
+import objects.Crab;
 import objects.Cup;
 import objects.Door;
 import objects.GameCharacter;
@@ -351,7 +352,7 @@ public class Room {
 		for (GameObject object : orderedObjects) {
 
 			// se o objecto for móvel, vai guardar a posição imediatamente abaixo
-			if (object instanceof MovableObject) {
+			if (object instanceof MovableObject && !(object instanceof Buoy)) {
 				Point2D destination = object.getPosition().plus(Direction.DOWN.asVector());
 
 				// se o objeto no Tile imediatamente abaixo for apenas a água, o objeto move-se
@@ -444,6 +445,19 @@ public class Room {
 	    }
 	}
 
+	// faz com que os caranguejos se movam
+	public void processEnemies() {
+		
+		List<GameObject> enemies = new ArrayList<>(objects);
+	    
+	    for (GameObject obj : enemies) {
+	        // se tiver um caranguejo, move-o
+	        if (obj instanceof Crab) {
+	            ((Crab) obj).moveEnemy();
+	        }
+	    }
+	}
+	
 	// public int getLevelNumber() {
 	// return levelNumber;
 	// }

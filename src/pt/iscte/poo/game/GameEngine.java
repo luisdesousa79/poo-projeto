@@ -193,6 +193,9 @@ public class GameEngine implements Observer {
 		// implementa a gravidade nos objectos da Room
 		currentRoom.applyGravity();
 		
+		// poe os inimigos para se moverem
+		currentRoom.processEnemies();
+		
 		// verifica se o peixe pequeno pode suportar os objetos móveis acima dele
 		if (!SmallFish.getInstance().canSupport())
 			SmallFish.getInstance().dies();
