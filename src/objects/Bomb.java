@@ -35,10 +35,10 @@ public class Bomb extends LightObject {
 	}
 
 	public void falls() {
-		explode();
+		explodes();
 	}
 
-	public void explode() {
+	public void explodes() {
 		// define a area da explosao
 		List<Point2D> areaDeExplosao = new ArrayList<>();
 		areaDeExplosao.add(getPosition());
@@ -73,5 +73,28 @@ public class Bomb extends LightObject {
 			}
 		}
 	}
-}
+	
+	@Override
+	public void applyGravity() {
+		super.applyGravity();
+		
+		// vai guardar a posição imediatamente abaixo
+		Point2D destination = getPosition().plus(Direction.DOWN.asVector());
+		
+		if (!getRoom().isOnlyWaterAt(destination)) {
+			// salva o que está em baixo
+			List<GameObject> objetosAtingidos = new ArrayList<>(getRoom().getObjectsAt(destination));
+			
+			for (GameObject object : objetosAtingidos) {
+				// se a bomba colide com um peixe, o peixe suporta a bomba
+				if(object instanceof GameCharacter) {
+					// agora o peixe está suportando a bomba
+					this.setFalling(false);
+				}
+			}
 
+			// caso contrário, explode
+			this.explodes();
+		}
+	}
+}

@@ -1,6 +1,7 @@
 package objects;
 
 import pt.iscte.poo.game.Room;
+import pt.iscte.poo.utils.Direction;
 import pt.iscte.poo.utils.Point2D;
 import pt.iscte.poo.utils.Vector2D;
 
@@ -8,6 +9,22 @@ public abstract class MovableObject extends GameObject implements Pushable {
 
 	public MovableObject(Room room) {
 		super(room);
+	}
+
+	@Override
+	public void updatePhysics() {
+		applyGravity();
+	}
+
+	public void applyGravity() {
+	// vai guardar a posição imediatamente abaixo
+	Point2D destination = getPosition().plus(Direction.DOWN.asVector());
+	
+	// se o objeto no Tile imediatamente abaixo for apenas a água, o objeto move-se 
+	//para baixo (cai uma posição)
+	if (getRoom().isOnlyWaterAt(destination)) {
+		setPosition(destination);
+		}
 	}
 
 	// este método implementa a interface Pushable
@@ -37,9 +54,9 @@ public abstract class MovableObject extends GameObject implements Pushable {
 
 				// inspeciona se na direção do empurrão há um objeto adjacente
 				if (getRoom().isOnlyWaterAt(nextObject.getPosition().plus(dir))) {
-					//havendo empurra esse objeto para a posição seguinte
+					// havendo empurra esse objeto para a posição seguinte
 					nextObject.setPosition(nextObject.getPosition().plus(dir));
-					//move-se para a posição deixada vazia pelo objeto empurrado
+					// move-se para a posição deixada vazia pelo objeto empurrado
 					setPosition(newPos);
 					return true;
 				}

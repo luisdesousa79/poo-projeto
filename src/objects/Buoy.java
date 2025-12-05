@@ -21,6 +21,19 @@ public class Buoy extends LightObject implements Sinkable {
 		return 1; // qual é a Layer do Buoy?
 	}
 
+	@Override
+	public void updatePhysics() {
+		buoys();
+		this.sinks();
+	}
+
+	public void buoys() {
+		// deve boiar se não tiver nenhum objeto móvel por cima
+		Point2D above = getPosition().plus(Direction.UP.asVector());
+		if (getRoom().isOnlyWaterAt(above)) {
+			setPosition(above);
+		}
+	}
 
 	@Override
 	public void sinks() {

@@ -351,7 +351,7 @@ public class Room {
 		// percorre a lista ordenada de objectos da Room
 		for (GameObject object : orderedObjects) {
 
-			// se o objecto for móvel, vai guardar a posição imediatamente abaixo
+			// se o objeto for móvel, vai guardar a posição imediatamente abaixo
 			if (object instanceof MovableObject && !(object instanceof Buoy)) {
 				Point2D destination = object.getPosition().plus(Direction.DOWN.asVector());
 
@@ -425,37 +425,51 @@ public class Room {
 
 	// função que aplica o boiar aos objetos que boiam (neste caso, apenas à bóia)
 	public void applyBuoyancy() {
-			for (GameObject object : objects) {
-				if (object instanceof Buoy) {
-					//deve boiar se não tiver nenhum objeto móvel por cima
-					Point2D above = object.getPosition().plus(Direction.UP.asVector());
-					if (isOnlyWaterAt(above)) {
-						object.setPosition(above);
-					}
+		for (GameObject object : objects) {
+			if (object instanceof Buoy) {
+				// deve boiar se não tiver nenhum objeto móvel por cima
+				Point2D above = object.getPosition().plus(Direction.UP.asVector());
+				if (isOnlyWaterAt(above)) {
+					object.setPosition(above);
+				}
 			}
 		}
 	}
-	
+
 	// função que aplica o afundar aos objetos Sinkable
 	public void applySinking() {
-	    for (GameObject object : objects) {
-	        if (object instanceof Sinkable) {
-	            ((Sinkable)object).sinks();
-	        }
-	    }
+		for (GameObject object : objects) {
+			if (object instanceof Sinkable) {
+				((Sinkable) object).sinks();
+			}
+		}
 	}
 
 	// faz com que os caranguejos se movam
 	public void processEnemies() {
-		
+
 		List<GameObject> enemies = new ArrayList<>(objects);
-	    
-	    for (GameObject obj : enemies) {
-	        // se tiver um caranguejo, move-o
-	        if (obj instanceof Crab) {
-	            ((Crab) obj).moveEnemy();
-	        }
-	    }
+
+		for (GameObject obj : enemies) {
+			// se tiver um caranguejo, move-o
+			if (obj instanceof Crab) {
+				((Crab) obj).moveEnemy();
+			}
+		}
 	}
-	
+
+	public void applyPhysics() {
+		// cria uma cópia da lista de objectos do jogo
+		List<GameObject> orderedObjects = new ArrayList<>(objects);
+
+		// ordena a lista de objetos do jogo de tal forma que venham primeiro os que
+		// estão em baixo
+		orderedObjects.sort((a, b) -> (Integer.compare(b.getPosition().getY(), a.getPosition().getY())));
+
+		// percorre a lista ordenada de objectos da Room
+		for (GameObject object : orderedObjects) {
+			object.updatePhysics();
+		}
+
+	}
 }
