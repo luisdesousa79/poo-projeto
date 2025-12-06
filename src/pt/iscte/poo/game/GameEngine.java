@@ -188,7 +188,6 @@ public class GameEngine implements Observer {
 		if (currentRoom != null) {
 			ImageGUI.getInstance().clearImages();
 			ImageGUI.getInstance().addImages(currentRoom.getObjects());
-			updateStatusMessage();
 		}
 	}
 
@@ -274,6 +273,9 @@ public class GameEngine implements Observer {
 		
 		// guarda a room atual na variável currentRoom
 		currentRoom = rooms.get(fileName);
+		
+		SmallFish.getInstance().setRoom(currentRoom);
+	    BigFish.getInstance().setRoom(currentRoom);
 
 		// volta a adicionar os peixes à room atual
 		currentRoom.addObject(SmallFish.getInstance());
