@@ -37,8 +37,6 @@ public class Room {
 	private Point2D bigFishStartingPosition;
 	private int activeFishIndex;
 
-	private int levelNumber;
-
 	public Room() {
 		objects = new ArrayList<GameObject>();
 	}

@@ -135,7 +135,6 @@ public abstract class GameCharacter extends GameObject {
 	public void dies() {
 		getRoom().removeObject(this);
 		this.isDead = true;
-
 		// volta ao início do nível
 	}
 
