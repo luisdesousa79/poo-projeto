@@ -45,8 +45,8 @@ public class GameEngine implements Observer {
 		// "room0.txt"
 		currentRoom = rooms.get("room0.txt");
 		updateGUI();
-		// SmallFish.getInstance().setRoom(currentRoom);
-		// BigFish.getInstance().setRoom(currentRoom);
+		
+		//inicializa os peixes na Room
 		SmallFish sf = SmallFish.getInstance();
 		sf.setRoom(currentRoom);
 		sf.setPosition(currentRoom.getSmallFishStartingPosition());
@@ -56,6 +56,7 @@ public class GameEngine implements Observer {
 		bf.setRoom(currentRoom);
 		bf.setPosition(currentRoom.getBigFishStartingPosition());
 		currentRoom.addObject(bf);
+
 	}
 
 	private void loadGame() {
@@ -116,44 +117,53 @@ public class GameEngine implements Observer {
 							// se o peixe ativo é o pequeno, incrementa o contador do pequeno e atualiza
 							// mensagem
 							numberSmallFishMoves++;
-							updateStatusBar();
+							updateStatusMessage();
 						}
 
 						// se é o grande, incrementa o grande e atualiza mensagem
 						if (currentRoom.getActiveFish() instanceof BigFish) {
 							numberBigFishMoves++;
-							updateStatusBar();
+							updateStatusMessage();
 						}
 
 						// verifica se o peixe pode suportar os objetos da nova posição
 						if (!fish.canSupport())
 							fish.dies();
+
 						// verifica se está em posição de saída de nível
 						processExit(fish);
 					}
 				}
 			}
-
-			// vitória
-			if (smallFishExited && bigFishExited) {
-				loadNextLevel();
-				// reset p a prox room
-				smallFishExited = false;
-				bigFishExited = false;
-			}
-
-			// salva quantos tiques já passaram até agora
-			int t = ImageGUI.getInstance().getTicks();
-
-			// processa os ticks passados desde o último até ao t
-			while (lastTickProcessed < t) {
-				processTick();
-			}
-
-			// chama o update da interface gráfica
-			ImageGUI.getInstance().update();
-
 		}
+
+		// salva quantos tiques já passaram até agora
+		int t = ImageGUI.getInstance().getTicks();
+
+		// processa os ticks passados desde o último até ao t
+		while (lastTickProcessed < t) {
+			processTick();
+		}
+
+		
+		// verifica se algum dos peixes morreu na sequência do movimento e dos ticks que passaram
+		// caso tenha morrido, reinícia o nível
+		if (SmallFish.getInstance().isDead() || BigFish.getInstance().isDead()) {
+			restartRoom();
+			return;
+		}
+
+		// verifica se os dois peixes saíram, caso em que passa ao próximo nível
+		if (smallFishExited && bigFishExited) {
+			loadNextLevel();
+			// reset p a prox room
+			smallFishExited = false;
+			bigFishExited = false;
+		}
+
+		// chama o update da interface gráfica
+		ImageGUI.getInstance().update();
+
 	}
 
 	// incrementa o contador de ticks e aplica a gravidade aos objetos móveis
@@ -178,40 +188,28 @@ public class GameEngine implements Observer {
 		if (currentRoom != null) {
 			ImageGUI.getInstance().clearImages();
 			ImageGUI.getInstance().addImages(currentRoom.getObjects());
+			updateStatusMessage();
 		}
 	}
 
-	private void updateStatusBar() {
-		String message = String.format("Room %s | Small: %d | Big: %d", currentRoom.getName(), numberSmallFishMoves,
-				numberBigFishMoves);
-
+	// procedimento para atualizar a mensagem do topo da janela
+	private void updateStatusMessage() {
+		String message = "Room: " + currentRoomNumber + " | Small: " + numberSmallFishMoves + " | Big: "
+				+ numberBigFishMoves;
 		ImageGUI.getInstance().setStatusMessage(message);
 	}
 
 	// carrega o nível seguinte
 	private void loadNextLevel() {
-		
-		// pega a room atual
-		String roomAtual = currentRoom.getName();
-
-		// corta os 4 caracteres de cada ponta deixando só o número da room atual
-		String numRoomAtualStr = roomAtual.substring(4, roomAtual.length() - 4);
-
-		// converte para int
-		int numRoomAtual = Integer.parseInt(numRoomAtualStr);
 
 		// define a proxima room
-		int numRoomSeguinte = numRoomAtual + 1;
+		int numRoomSeguinte = currentRoomNumber + 1;
 		String roomSeguinte = "room" + numRoomSeguinte + ".txt";
 
 		// se houver uma próxima room
 		if (rooms.containsKey(roomSeguinte)) {
 
-			// limpa a tela - em rigor, isto devia ser desnecessário, o updateGUI já faz
-			// isto
-			ImageGUI.getInstance().clearImages();
-
-			// passa de room
+			// atualiza a room
 			currentRoom = rooms.get(roomSeguinte);
 
 			// inicializa os peixes na nova Room
@@ -228,9 +226,9 @@ public class GameEngine implements Observer {
 
 			updateGUI();
 
-			ImageGUI.getInstance().setStatusMessage("Room " + numRoomSeguinte);
-
 			currentRoomNumber++;
+
+			updateStatusMessage();
 
 		} else {
 			// se n tiver mais rooms, venceu tudo
@@ -263,29 +261,42 @@ public class GameEngine implements Observer {
 		}
 	}
 
-	// vai
+	// vai reiniciar o nível
 	public void restartRoom() {
+		
+		String fileName = "room" + currentRoomNumber + ".txt";
+		
+		// guarda o ficheiro de onde vai recarregar a room
+		File f = new File("./rooms/" + fileName);
 
-		// obtém o nome da String da room atual
-		String currentRoomName = currentRoom.getName();
+		// volta a carregar a Room no seu estado inicial no dicionário
+		rooms.put(f.getName(), Room.readRoom(f, this));
+		
+		// guarda a room atual na variável currentRoom
+		currentRoom = rooms.get(fileName);
 
-		// obtém a versão inicial da room atual ao fichero respetivo e guarda-a na
-		// variável currentRoom
-		currentRoom = rooms.get(currentRoomName);
-
-		// volta a adicionar os peixes à room que está a ser carregada
+		// volta a adicionar os peixes à room atual
 		currentRoom.addObject(SmallFish.getInstance());
 		currentRoom.addObject(BigFish.getInstance());
 
 		// redireciona os peixes para o posicão inicial da room atual
 		SmallFish.getInstance().setPosition(currentRoom.getSmallFishStartingPosition());
 		BigFish.getInstance().setPosition(currentRoom.getBigFishStartingPosition());
+		
+		// reiniciar flags de saída
+	    smallFishExited = false;
+	    bigFishExited = false;
+		
+		// reiniciar estado isDead como falso
+	    SmallFish.getInstance().setAlive();
+	    BigFish.getInstance().setAlive();
 
 		// atualiza interface gráfico
 		updateGUI();
 
-		ImageGUI.getInstance().setStatusMessage(
-				"Room: " + currentRoomNumber + " | Small: " + numberSmallFishMoves + " | Big: " + numberBigFishMoves);
+		updateStatusMessage();
 	}
+	
+	
 
 }

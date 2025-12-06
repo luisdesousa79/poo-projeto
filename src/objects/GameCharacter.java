@@ -18,9 +18,12 @@ public abstract class GameCharacter extends GameObject {
 	public int getLayer() {
 		return 2;
 	}
+	
+	public void setAlive() {
+		this.isDead = false;
+	}
 
-	// inicialmente esta função fazia apenas movimentos aleatórios
-	// agora implementa o movimento dos peixes controlado pelo jogador
+	// implementa o movimento dos peixes controlado pelo jogador
 
 	public void move(Vector2D dir) {
 
@@ -135,7 +138,6 @@ public abstract class GameCharacter extends GameObject {
 	public void dies() {
 		getRoom().removeObject(this);
 		this.isDead = true;
-		// volta ao início do nível
 	}
 
 	// retorna verdadeiro se o peixe em causa morreu
@@ -184,5 +186,7 @@ public abstract class GameCharacter extends GameObject {
 
 		return true;
 	}
+	
+	
 
 }
