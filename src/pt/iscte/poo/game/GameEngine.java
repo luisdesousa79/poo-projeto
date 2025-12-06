@@ -164,17 +164,6 @@ public class GameEngine implements Observer {
 	private void processTick() {
 
 		lastTickProcessed++;
-		// implementa o boiar da bóia
-		// currentRoom.applyBuoyancy();
-
-		// implementa o afundar dos objetos Sinkable
-		// currentRoom.applySinking();
-
-		// implementa a gravidade nos objectos da Room
-		// currentRoom.applyGravity();
-
-		// poe os inimigos para se moverem
-		// currentRoom.processEnemies();
 		
 		//põe os objetos da room a movimentarem-se
 		currentRoom.updateMovement();
