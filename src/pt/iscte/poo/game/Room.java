@@ -9,7 +9,6 @@ import objects.Anchor;
 import objects.BigFish;
 import objects.Bomb;
 import objects.Buoy;
-import objects.Crab;
 import objects.Cup;
 import objects.Door;
 import objects.GameCharacter;
@@ -18,7 +17,6 @@ import objects.HeavyObject;
 import objects.HoledWall;
 import objects.ImmovableObject;
 import objects.MovableObject;
-import objects.Sinkable;
 import objects.SmallFish;
 import objects.SteelHorizontal;
 import objects.SteelVertical;
@@ -384,7 +382,7 @@ public class Room {
 						}
 
 						// caso contrário, explode
-						b.falls();
+						b.explodes();
 					}
 				}
 
@@ -423,42 +421,7 @@ public class Room {
 		return stack;
 	}
 
-	// função que aplica o boiar aos objetos que boiam (neste caso, apenas à bóia)
-	public void applyBuoyancy() {
-		for (GameObject object : objects) {
-			if (object instanceof Buoy) {
-				// deve boiar se não tiver nenhum objeto móvel por cima
-				Point2D above = object.getPosition().plus(Direction.UP.asVector());
-				if (isOnlyWaterAt(above)) {
-					object.setPosition(above);
-				}
-			}
-		}
-	}
-
-	// função que aplica o afundar aos objetos Sinkable
-	public void applySinking() {
-		for (GameObject object : objects) {
-			if (object instanceof Sinkable) {
-				((Sinkable) object).sinks();
-			}
-		}
-	}
-
-	// faz com que os caranguejos se movam
-	public void processEnemies() {
-
-		List<GameObject> enemies = new ArrayList<>(objects);
-
-		for (GameObject obj : enemies) {
-			// se tiver um caranguejo, move-o
-			if (obj instanceof Crab) {
-				((Crab) obj).moveEnemy();
-			}
-		}
-	}
-
-	public void applyPhysics() {
+	public void updateMovement() {
 		// cria uma cópia da lista de objectos do jogo
 		List<GameObject> orderedObjects = new ArrayList<>(objects);
 
@@ -468,7 +431,7 @@ public class Room {
 
 		// percorre a lista ordenada de objectos da Room
 		for (GameObject object : orderedObjects) {
-			object.updatePhysics();
+			object.applyMovement();
 		}
 
 	}

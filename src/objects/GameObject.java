@@ -39,6 +39,6 @@ public abstract class GameObject implements ImageTile{
 		this.room = room;
 	}
 	
-	public void updatePhysics() {};
+	public void applyMovement() {};
 	
 }

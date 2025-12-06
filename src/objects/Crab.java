@@ -3,11 +3,8 @@ package objects;
 import pt.iscte.poo.game.Room;
 import pt.iscte.poo.utils.Direction;
 import pt.iscte.poo.utils.Point2D;
-import pt.iscte.poo.utils.Vector2D;
 
-// porque é que é MovableObject?
-// podíamos criar um  novo tipo de objeto: Enemy
-public class Crab extends MovableObject implements Sinkable {
+public class Crab extends MovableObject {
 
 	private boolean justSpawned = true;
 	
@@ -25,26 +22,8 @@ public class Crab extends MovableObject implements Sinkable {
 		return 1; // investigar qual o layer correto
 	}
 	
-	// não deixa o caranguejo ser empurado
-	// podia não ser preciso, porque ele não é Pushable
 	@Override
-	public boolean push(Vector2D dir) {
-		return false; // O enunciado diz que não pode ser empurrado
-	}
-	
-	
-	@Override
-	public void sinks() {
-		Point2D below = this.getPosition().plus(Direction.DOWN.asVector());
-
-		// afunda se n tiver nd em baixo
-		if (getRoom().isOnlyWaterAt(below)) {
-			this.setPosition(below);
-		}
-	}
-	
-	// podia ir para uma possível classe mãe Enemy
-	public void moveEnemy() {
+	public void applyMovement() {
 		
 		// faz com que ele só se mova no turno depois de nascer
 		if (justSpawned) {
@@ -71,9 +50,11 @@ public class Crab extends MovableObject implements Sinkable {
 				SmallFish.getInstance().dies();
 			}
 			
-			// se movimenta
+			// movimenta-se
 			setPosition(newPos);
 		}
+		
+		super.applyGravity();
 	}
 
 	private boolean isValidMovement(Point2D p) {
@@ -97,7 +78,6 @@ public class Crab extends MovableObject implements Sinkable {
 		return true; 
 	}
 	
-	// estes métodos têm de ser mudados para a room
 	private boolean isSmallFishAt(Point2D p) {
 		return SmallFish.getInstance().getPosition().equals(p);
 	}

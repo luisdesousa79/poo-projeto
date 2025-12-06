@@ -12,18 +12,18 @@ public abstract class MovableObject extends GameObject implements Pushable {
 	}
 
 	@Override
-	public void updatePhysics() {
+	public void applyMovement() {
 		applyGravity();
 	}
 
 	public void applyGravity() {
-	// vai guardar a posição imediatamente abaixo
-	Point2D destination = getPosition().plus(Direction.DOWN.asVector());
+		// vai guardar a posição imediatamente abaixo
+		Point2D destination = getPosition().plus(Direction.DOWN.asVector());
 	
-	// se o objeto no Tile imediatamente abaixo for apenas a água, o objeto move-se 
-	//para baixo (cai uma posição)
-	if (getRoom().isOnlyWaterAt(destination)) {
-		setPosition(destination);
+		// se o objeto no Tile imediatamente abaixo for apenas a água, o objeto move-se 
+		//para baixo (cai uma posição)
+		if (getRoom().isOnlyWaterAt(destination)) {
+			setPosition(destination);
 		}
 	}
 
