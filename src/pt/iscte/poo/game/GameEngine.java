@@ -20,6 +20,15 @@ public class GameEngine implements Observer {
 	private Room currentRoom;
 	private int lastTickProcessed = 0;
 
+	// contador do número de ticks
+	private int numberOfTicks = 0;
+
+	// contador do número de movimentos do peixe grande
+	private int numberMovesBigFish = 0;
+
+	// contador do número de movimentos do peixe pequeno
+	private int numberMovesSmallFish = 0;
+
 	private boolean smallFishExited = false;
 	private boolean bigFishExited = false;
 
@@ -42,7 +51,6 @@ public class GameEngine implements Observer {
 		bf.setRoom(currentRoom);
 		bf.setPosition(currentRoom.getBigFishStartingPosition());
 		currentRoom.addObject(bf);
-
 	}
 
 	private void loadGame() {
@@ -56,6 +64,117 @@ public class GameEngine implements Observer {
 		}
 	}
 
+	// este é o método que trata das teclas e dos ticks
+	@Override
+	public void update(Observed source) {
+		// pergunta à ImageGUI se alguma tecla foi pressionada
+		if (ImageGUI.getInstance().wasKeyPressed()) {
+			// lê a tecla carregada
+			int k = ImageGUI.getInstance().keyPressed();
+
+			// se carregarmos na tecla "r" (código 82), voltamos ao iníco do nível
+			if (k == 82) {
+				return; // substituir por função de reinício de nível
+			}
+
+			// se carregarmos na tecla "espaço" (código 32), muda-se de peixe
+			if (k == 32) {
+				currentRoom.nextFish();
+			}
+
+			// se se carregar numa tecla de direcção, movimenta-se o peixe actual
+			if (Direction.isDirection(k)) {
+				GameCharacter fish = currentRoom.getActiveFish();
+
+				boolean fishSaiu = false;
+				// verifica se o peixe saiu ou não
+				if ((fish instanceof SmallFish && smallFishExited) || (fish instanceof BigFish && bigFishExited)) {
+					fishSaiu = true;
+				}
+
+				// move o peixe se ele nao saiu do nível
+				if (!fishSaiu) {
+					fish.move(Direction.directionFor(k).asVector());
+					if (currentRoom.getActiveFish().equals(BigFish.getInstance()))
+					// se o peixe ativo é o pequeno, incrementa o contador do pequeno e atualiza mensagem
+						numberMovesSmallFish++;
+						updateStatusBar();
+					
+					// se é o grande, incrementa o grande e atualiza mensagem
+					if (currentRoom.getActiveFish().equals(BigFish.getInstance())) {
+						numberMovesBigFish++;
+						updateStatusBar();
+					}
+					
+					
+					
+					
+					// verifica se o peixe pode suportar os objetos da nova posição
+					if (!fish.canSupport())
+						fish.dies();
+					// verifica se está em posição de saída de nível
+					processExit(fish);
+				}
+			}
+		}
+
+		// vitória
+		if (smallFishExited && bigFishExited) {
+			loadNextLevel();
+			// reset p a prox room
+			smallFishExited = false;
+			bigFishExited = false;
+		}
+
+		// salva quantos tiques já passaram até agora
+		int t = ImageGUI.getInstance().getTicks();
+
+		// processa os ticks passados desde o último até ao t
+		while (lastTickProcessed < t) {
+			processTick();
+		}
+
+		// chama o update da interface gráfica
+		ImageGUI.getInstance().update();
+
+	}
+
+	// incrementa o contador de ticks e aplica a gravidade aos objetos móveis
+	private void processTick() {
+
+		lastTickProcessed++;
+
+		// põe os objetos da room a movimentarem-se
+		currentRoom.updateMovement();
+
+		// verifica se o peixe pequeno pode suportar os objetos móveis acima dele
+		if (!SmallFish.getInstance().canSupport())
+			SmallFish.getInstance().dies();
+
+		// verifica se o peixe grande pode suportar os objetos móveis acima dele
+		if (!BigFish.getInstance().canSupport())
+			BigFish.getInstance().dies();
+	}
+
+	// atualiza os objetos da interface gráfica
+	public void updateGUI() {
+		if (currentRoom != null) {
+			ImageGUI.getInstance().clearImages();
+			ImageGUI.getInstance().addImages(currentRoom.getObjects());
+		}
+	}
+
+	private void updateStatusBar() {
+	    String message = String.format(
+	        "Room %s | Small: %d | Big: %d",
+	        currentRoom.getName(),
+	        numberMovesSmallFish,
+	        numberMovesBigFish
+	    );
+
+	    ImageGUI.getInstance().setStatusMessage(message);
+	}
+	
 	// carrega o nível seguinte
 	private void loadNextLevel() {
 
@@ -102,87 +221,6 @@ public class GameEngine implements Observer {
 			ImageGUI.getInstance().setStatusMessage("Acabaram todas as rooms. Parabéns você venceu!!!! :)");
 		}
 
-	}
-
-	// este é o método que trata das teclas e dos ticks
-	@Override
-	public void update(Observed source) {
-		// pergunta à ImageGUI se alguma tecla foi pressionada
-		if (ImageGUI.getInstance().wasKeyPressed()) {
-			// lê a tecla carregada
-			int k = ImageGUI.getInstance().keyPressed();
-
-			// se carregarmos na tecla "espaço" (código 32), muda-se de peixe
-			if (k == 32) {
-				currentRoom.nextFish();
-			}
-
-			// se se carregar numa tecla de direcção, movimenta-se o peixe actual
-			if (Direction.isDirection(k)) {
-				GameCharacter fish = currentRoom.getActiveFish();
-
-				boolean fishSaiu = false;
-				// ve se o peixe saiu ou nao
-				if ((fish instanceof SmallFish && smallFishExited) || (fish instanceof BigFish && bigFishExited)) {
-					fishSaiu = true;
-				}
-
-				// mexe o peixe se ele nao saiu
-				if (!fishSaiu) {
-					fish.move(Direction.directionFor(k).asVector());
-					// verifica se o peixe pode suportar os objetos da nova posição
-					if (!fish.canSupport())
-						fish.dies();
-					// verifica se está em posição de saída de nível
-					processExit(fish);
-				}
-			}
-		}
-
-		// salva quantos tiques já passaram até agora
-		int t = ImageGUI.getInstance().getTicks();
-
-		// processa os ticks passados desde o último até ao t
-		while (lastTickProcessed < t) {
-			processTick();
-		}
-
-		// vitória
-		if (smallFishExited && bigFishExited) {
-			loadNextLevel();
-			// reset p a prox room
-			smallFishExited = false;
-			bigFishExited = false;
-		}
-
-		// chama o update da interface gráfica
-		ImageGUI.getInstance().update();
-
-	}
-
-	// incrementa o contador de ticks e aplica a gravidade aos objetos móveis
-	private void processTick() {
-
-		lastTickProcessed++;
-		
-		//põe os objetos da room a movimentarem-se
-		currentRoom.updateMovement();
-
-		// verifica se o peixe pequeno pode suportar os objetos móveis acima dele
-		if (!SmallFish.getInstance().canSupport())
-			SmallFish.getInstance().dies();
-
-		// verifica se o peixe grande pode suportar os objetos móveis acima dele
-		if (!BigFish.getInstance().canSupport())
-			BigFish.getInstance().dies();
-	}
-
-	// atualiza os objetos da interface gráfica
-	public void updateGUI() {
-		if (currentRoom != null) {
-			ImageGUI.getInstance().clearImages();
-			ImageGUI.getInstance().addImages(currentRoom.getObjects());
-		}
 	}
 
 	// verifica se o peixe está na posição de Exit

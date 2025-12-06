@@ -10,12 +10,15 @@ public abstract class MovableObject extends GameObject implements Pushable {
 	public MovableObject(Room room) {
 		super(room);
 	}
-
+	
+	// o movimento dos objetos MovableObject obedecerá à gravidade,
+	// exceto quando houver overrides nas classes filhas
 	@Override
 	public void applyMovement() {
 		applyGravity();
 	}
 
+	// método que implementa o funcionamento da gravidade para os MovableObject em geral
 	public void applyGravity() {
 		// vai guardar a posição imediatamente abaixo
 		Point2D destination = getPosition().plus(Direction.DOWN.asVector());
@@ -27,7 +30,7 @@ public abstract class MovableObject extends GameObject implements Pushable {
 		}
 	}
 
-	// este método implementa a interface Pushable
+	// este método corresponde à implementação da interface Pushable
 	// o objetivo é implementar um empurrão em objectos móveis
 	@Override
 	public boolean push(Vector2D dir) {
