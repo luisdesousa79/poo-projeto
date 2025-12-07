@@ -30,8 +30,6 @@ public class SmallFish extends GameCharacter {
 	@Override
 	public boolean canPush(Pushable obj, Vector2D dir) {
 		
-		System.out.println("--- SmallFish a verificar empurrão ---");
-		
 		// no caso de um empurrão na vertical, devolve falso
 		if (dir.getY() != 0) {
 	        return false;

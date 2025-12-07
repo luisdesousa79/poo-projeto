@@ -15,7 +15,7 @@ public class Trunk extends ImmovableObject {
 
 	@Override
 	public int getLayer() {
-		return 1; // verificar se está correcto
+		return 1; 
 	}
 	
 	

@@ -23,7 +23,7 @@ public class Bomb extends LightObject {
 
 	@Override
 	public int getLayer() {
-		return 1; // verificar
+		return 1; 
 	}
 
 	public void setFalling(boolean falling) {

@@ -19,7 +19,7 @@ public class Crab extends MovableObject {
 
 	@Override
 	public int getLayer() {
-		return 1; // investigar qual o layer correto
+		return 1; 
 	}
 	
 	@Override

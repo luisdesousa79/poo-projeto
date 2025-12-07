@@ -17,7 +17,7 @@ public class Cup extends LightObject {
 
 	@Override
 	public int getLayer() {
-		return 1; // verificar se está correcto
+		return 1; 
 	}
 	
 	@Override

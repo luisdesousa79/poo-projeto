@@ -18,7 +18,7 @@ public class Buoy extends LightObject {
 
 	@Override
 	public int getLayer() {
-		return 1; // qual é a Layer do Buoy?
+		return 1; 
 	}
 
 	@Override
