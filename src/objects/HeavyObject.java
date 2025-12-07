@@ -15,20 +15,24 @@ public abstract class HeavyObject extends MovableObject {
 	@Override
 	public void applyGravity() {
 
-		super.applyGravity();
-
 		// vai guardar a posição imediatamente abaixo
 		Point2D destination = getPosition().plus(Direction.DOWN.asVector());
 
-		Point2D below = destination.plus(Direction.DOWN.asVector());
+		// se o objeto no Tile imediatamente abaixo for apenas a água, o objeto move-se
+		// para baixo (cai uma posição)
+		if (getRoom().isOnlyWaterAt(destination)) {
+			setPosition(destination);
 
-		List<GameObject> objsBelow = getRoom().getObjectsAt(below);
+			Point2D below = destination.plus(Direction.DOWN.asVector());
 
-		for (GameObject o : objsBelow) {
-			// se por baixo houver um tronco, remove-o
-			if (o instanceof Trunk) {
-				getRoom().removeObject(o);
-				break;
+			List<GameObject> objsBelow = getRoom().getObjectsAt(below);
+
+			for (GameObject o : objsBelow) {
+				// se por baixo houver um tronco, remove-o
+				if (o instanceof Trunk) {
+					getRoom().removeObject(o);
+					break;
+				}
 			}
 		}
 	}

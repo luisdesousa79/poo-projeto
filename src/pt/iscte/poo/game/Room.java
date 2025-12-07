@@ -13,7 +13,6 @@ import objects.Cup;
 import objects.Door;
 import objects.GameCharacter;
 import objects.GameObject;
-import objects.HeavyObject;
 import objects.HoledWall;
 import objects.ImmovableObject;
 import objects.MovableObject;
@@ -324,84 +323,12 @@ public class Room {
 	// verifica se uma determinada posição contém uma instância de taça
 	public boolean hasCupAt(Point2D pos) {
 		for (GameObject o : getObjectsAt(pos)) {
-			if (o instanceof HoledWall)
+			if (o instanceof Cup)
 				return true;
 		}
 		return false;
 	}
 
-	// este método aplica a gravidade (movimento para baixo de uma unidade) aos
-	// objetos do Room
-	public void applyGravity() {
-
-		// cria uma cópia da lista de objectos do jogo
-		List<GameObject> orderedObjects = new ArrayList<>(objects);
-
-		// ordena a lista de objetos do jogo de tal forma que venham primeiro os que
-		// estão em baixo
-		orderedObjects.sort((a, b) -> (Integer.compare(b.getPosition().getY(), a.getPosition().getY())));
-
-		// percorre a lista ordenada de objectos da Room
-		for (GameObject object : orderedObjects) {
-
-			// se o objeto for móvel, vai guardar a posição imediatamente abaixo
-			if (object instanceof MovableObject && !(object instanceof Buoy)) {
-				Point2D destination = object.getPosition().plus(Direction.DOWN.asVector());
-
-				// se o objeto no Tile imediatamente abaixo for apenas a água, o objeto move-se
-				// para baixo (cai uma posição)
-				if (isOnlyWaterAt(destination)) {
-					object.setPosition(destination);
-
-					// se for a bomba a cair, o estado dela muda para falling
-					if (object instanceof Bomb) {
-						((Bomb) object).setFalling(true);
-					}
-
-				}
-
-				// caso em que a bomba está a cair e encontra algo
-
-				if (object instanceof Bomb) {
-					Bomb b = (Bomb) object;
-
-					if (b.isFalling()) {
-						// salva o que está em baixo
-						GameObject objetoAtingido = getElementAt(destination);
-
-						// se a bomba colide com um peixe, o peixe suporta a bomba
-						if (objetoAtingido instanceof GameCharacter) {
-							// agora peixe está suportando a bomba
-							b.setFalling(false);
-
-						}
-
-						// caso contrário, explode
-						b.explodes();
-					}
-				}
-
-				// vamos verificar se, na queda, um objecto pesado cai em cima do tronco
-				if (object instanceof HeavyObject) {
-
-					Point2D below = destination.plus(Direction.DOWN.asVector());
-
-					List<GameObject> objsBelow = getObjectsAt(below);
-
-					for (GameObject o : objsBelow) {
-						// se por baixo houver um tronco, remove-o
-						if (o instanceof Trunk) {
-							removeObject(o);
-							break;
-						}
-
-					}
-				}
-
-			}
-
-		}
-	}
 
 	public List<MovableObject> getMovableObjectsAbove(Point2D pos) {
 
