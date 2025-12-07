@@ -18,13 +18,14 @@ public class Buoy extends LightObject {
 
 	@Override
 	public int getLayer() {
-		return 1; 
+		return 1;
 	}
 
 	@Override
 	public void applyMovement() {
-		buoys();
 		sinks();
+		buoys();
+
 	}
 
 	public void buoys() {

@@ -1,8 +1,6 @@
 package pt.iscte.poo.game;
 
-import java.io.Serializable;
-
-public class Score implements Comparable<Score>, Serializable {
+public class Score implements Comparable<Score> {
     
     private String playerName;
     private int moves;
