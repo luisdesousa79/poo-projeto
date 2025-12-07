@@ -303,16 +303,22 @@ public class Room {
 	// este método diz que objeto está numa determinada posição, ignorando a
 	// água
 	public GameObject getElementAt(Point2D position) {
+		GameObject candidato = null;
+		
 		for (GameObject obj : objects) {
 			if (obj.getPosition().equals(position)) {
 				// ignora a água
 				if (obj instanceof Water)
 					continue;
-
-				return obj;
+				// se encontrar um objeto movel ele tem prioridade sobre paredes (imoveis)
+				if (obj instanceof MovableObject) {
+	                return obj;
+	            }
+				
+				candidato = obj;
 			}
 		}
-		return null; // dá null se a posicao é agua
+		return candidato; // da o imovel se ja deu o movel ou nao e dá null se a posicao é agua
 	}
 
 	// verifica se uma determinada posição contém uma instância de muro perfurado

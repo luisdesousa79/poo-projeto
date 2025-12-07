@@ -231,7 +231,24 @@ public class GameEngine implements Observer {
 
 		} else {
 			// se n tiver mais rooms, venceu tudo
-			ImageGUI.getInstance().setStatusMessage("Acabaram todas as rooms. Parabéns você venceu!!!! :)");
+			// soma os tiks dos dois peixes
+            int finalMoves = numberBigFishMoves + numberSmallFishMoves; 
+            
+            // pede o nome ao jogador da run
+            String name = javax.swing.JOptionPane.showInputDialog(null, 
+                "Parabéns! Venceste com " + finalMoves + " moves!\nIntroduz o teu nome:");
+            
+            // se ele escreveu um nome guarda o score na lista
+            if (name != null && !name.trim().isEmpty()) {
+                ScoreManager sm = new ScoreManager();
+                sm.addScore(name, finalMoves);
+                
+                // mostra a lista das Highscores
+                javax.swing.JOptionPane.showMessageDialog(null, sm.getHighScoresText());
+            }
+            
+            // fecha o jogo
+             System.exit(0);
 		}
 
 	}
@@ -289,7 +306,7 @@ public class GameEngine implements Observer {
 	    smallFishExited = false;
 	    bigFishExited = false;
 		
-		// reiniciar estado isDead como falso
+	 // reiniciar estado isDead como falso
 	    SmallFish.getInstance().setAlive();
 	    BigFish.getInstance().setAlive();
 

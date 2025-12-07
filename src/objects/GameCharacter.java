@@ -28,47 +28,16 @@ public abstract class GameCharacter extends GameObject {
 	public void move(Vector2D dir) {
 
 		Point2D destination = getPosition().plus(dir);
-
+			
 		// inspecionamos a posição de destino para ver se está vazia (é só água)
 		// ouocupada
 		// no caso de estar ocupada, se está ocupada com um objecto móvel ou imóvel
-
+			
+			
 		// se é só água, o peixe pode mover-se para lá
 		if (getRoom().isOnlyWaterAt(destination)) {
 			setPosition(destination);
 			return;
-		}
-
-		// se é um objecto imóvel (fixo)
-		if (getRoom().hasImmovableAt(destination)) {
-
-			
-			// se o objeto no destino for uma HoledWall e o peixe for o pequeno
-			if (getRoom().hasHoledWallAt(destination) && this instanceof SmallFish) {
-				//se há uma taça na parede perfurada, tenta empurrar a taça
-				if (getRoom().hasCupAt(destination)) {
-					List<GameObject> objectsAtDestination = getRoom().getObjectsAt(destination);
-					for (GameObject object : objectsAtDestination) {
-						if(object instanceof Cup) {
-							boolean pushed = ((Cup) object).push(dir);
-							// caso o objeto tenha sido empurrado, move-se para a posição anterior dele
-							if (pushed) {
-								setPosition(destination);
-							}
-							break;
-						}
-					}
-				}
-				// se não tiver taça, o Peixe pequeno atravessa o buraco
-				setPosition(destination);
-				return;
-			}
-			
-			
-
-			// se for outro objeto imóvel, bloqueia movimento
-			return;
-
 		}
 
 		// se for um objeto móvel
@@ -129,6 +98,39 @@ public abstract class GameCharacter extends GameObject {
 				setPosition(destination);
 			}
 		}
+		
+		// se é um objecto imóvel (fixo)
+		if (getRoom().hasImmovableAt(destination)) {
+
+						
+			// se o objeto no destino for uma HoledWall e o peixe for o pequeno
+			if (getRoom().hasHoledWallAt(destination) && this instanceof SmallFish) {
+				//se há uma taça na parede perfurada, tenta empurrar a taça
+				if (getRoom().hasCupAt(destination)) {
+					List<GameObject> objectsAtDestination = getRoom().getObjectsAt(destination);
+					for (GameObject object : objectsAtDestination) {
+						if(object instanceof Cup) {
+							boolean pushed = ((Cup) object).push(dir);
+							// caso o objeto tenha sido empurrado, move-se para a posição anterior dele
+							if (pushed) {
+								setPosition(destination);
+							}
+							break;
+						}
+					}
+				}
+				// se não tiver taça, o Peixe pequeno atravessa o buraco
+				setPosition(destination);
+				return;
+			}
+						
+						
+
+			// se for outro objeto imóvel, bloqueia movimento
+			return;
+
+		}
+		
 	}
 
 	// método abstrato do canPush, implementado nas classes filhas

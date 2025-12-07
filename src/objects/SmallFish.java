@@ -30,6 +30,8 @@ public class SmallFish extends GameCharacter {
 	@Override
 	public boolean canPush(Pushable obj, Vector2D dir) {
 		
+		System.out.println("--- SmallFish a verificar empurrão ---");
+		
 		// no caso de um empurrão na vertical, devolve falso
 		if (dir.getY() != 0) {
 	        return false;
@@ -44,6 +46,11 @@ public class SmallFish extends GameCharacter {
 	    
 	    Point2D objectPosition = ((GameObject) obj).getPosition();
 	    Point2D nextToObject = objectPosition.plus(dir);
+	    
+	    // empede que o peixe empurre 2 coisas ao msm tempo
+	    if (getRoom().hasMovableAt(nextToObject)) {
+			return false;
+		}
 	    
 	    if(!getRoom().isOnlyWaterAt(nextToObject)) {
 	    	if(getRoom().getElementAt(objectPosition) instanceof Cup && getRoom().hasHoledWallAt(nextToObject)) {

@@ -1,0 +1,10 @@
+certo 24;24
+32 (contou parede);32
+aaa;34
+gui;39
+first;42
+zz;42
+Guilherme1;50
+guihu;50
+gui;50
+Leon;169
